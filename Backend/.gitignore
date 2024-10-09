@@ -1,1 +1,4 @@
 .idea/
+
+# Ignorar archivo .env
+.env
