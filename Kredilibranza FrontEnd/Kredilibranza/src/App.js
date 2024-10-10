@@ -8,6 +8,8 @@ import Simulador from "./componentes/Simulador";
 import QuienesSomos from "./componentes/QuienesSomos";
 import Footer from "./componentes/Footer";
 import ChatBotPage from "./componentes/chatbot";
+import FileUpload from "./componentes/FileUpload"
+
 
 import './componentes/Banner.css';
 import './componentes/Footer.css';
@@ -40,6 +42,7 @@ function App() {
           />
           {}
           <Route path="/chatbot" element={<ChatBotPage />} />
+          <Route path="/FileUpload" element={<FileUpload />} />
         </Routes>
       </div>
     </Router>

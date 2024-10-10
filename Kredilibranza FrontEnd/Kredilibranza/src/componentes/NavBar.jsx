@@ -20,7 +20,7 @@ function NavBar() {
             <li><Link to="/#quienes-somos">¿Quiénes Somos?</Link></li>
             <li><Link to="/#contacto">Contáctanos</Link></li>
             <li><Link to="/chatbot">ChatBot</Link></li>
-            <li><Link to="/rag">RAG</Link></li>
+            <li><Link to="/FileUpload">RAG</Link></li>
           </ul>
         </>
       )}

@@ -1,0 +1,75 @@
+/* FileUpload.css */
+
+/* Estilo principal del contenedor para centrar en la pantalla */
+.file-upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Mínima altura de la pantalla */
+    background-color: #f7fafc; /* Fondo gris claro */
+    padding: 16px;
+  }
+  
+  /* Estilo para la tarjeta central */
+  .file-upload-card {
+    background-color: #ffffff; /* Fondo blanco */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border-radius: 12px; /* Bordes redondeados */
+    padding: 32px;
+    width: 100%;
+    max-width: 800px; /* Ancho máximo de la tarjeta */
+  }
+  
+  /* Estilo para la zona de arrastrar y soltar */
+  .dropzone {
+    border: 2px dashed #cbd5e0; /* Borde gris claro */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+  }
+  
+  /* Estilo cuando el área de arrastre está activa */
+  .dropzone-active {
+    border-color: #4299e1; /* Color de borde azul */
+    background-color: #ebf8ff; /* Fondo azul claro */
+  }
+  
+  /* Estilo de la lista de archivos cargados */
+  .uploaded-files-list {
+    margin-top: 32px;
+  }
+  
+  .uploaded-file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f7fafc;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 12px;
+  }
+  
+  .file-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .file-name {
+    color: #2d3748;
+    font-size: 16px;
+    margin-left: 12px;
+  }
+  
+  .remove-button {
+    color: #e53e3e; /* Color rojo */
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  .remove-button:hover {
+    color: #c53030; /* Rojo más oscuro al pasar el cursor */
+  }
+  

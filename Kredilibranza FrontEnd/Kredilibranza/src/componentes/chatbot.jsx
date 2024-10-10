@@ -4,22 +4,33 @@ import './chatbot.css';
 function ChatBotPage() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
+
   const handleSendMessage = async () => {
     if (inputValue.trim() === '') return;
     const userMessage = { role: 'user', content: inputValue };
     setMessages([...messages, userMessage]);
     setInputValue('');
-    const botResponse = await simulateBotResponse(inputValue);
+    const botResponse = await getBotResponse(inputValue);
     setMessages((prevMessages) => [...prevMessages, botResponse]);
   };
 
-  const simulateBotResponse = async (message) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ role: 'bot', content: `Simulación de respuesta a: "${message}"` });
-      }, 1000); 
-    });
+  const getBotResponse = async ( message)=>{
+    try {
+      const response = await fetch(`http://localhost:8000/generate-answer/`, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',},
+        body: JSON.stringify({question:message}),
+      });
+      
+      const data = await response.json();
+      return { role: 'bot', content: data.answer }; // Ajusta según la estructura de la respuesta
+    } catch (error) {
+      console.error('Error al obtener respuesta del bot:', error);
+      return { role: 'bot', content: 'Error al obtener respuesta del bot.' };
+    }
   };
+
 
   return (
     <div className="chat-container">
