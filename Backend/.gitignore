@@ -1,0 +1,14 @@
+.idea/
+
+# Ignorar archivo .env
+.env
+
+
+# Ignorar archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+ ../Kredilibranza FrontEnd/
+  ../frontend/
