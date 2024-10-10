@@ -14,11 +14,14 @@ rag_router = APIRouter()
 class DocumentInput(BaseModel):
     content: str = pydantic.Field(..., min_length=1)
 
+class QueryInput(BaseModel):
+    question: str = pydantic.Field(..., min_length=1)
+
 
 @rag_router.post("/generate-answer/", status_code=200)
-def generate_answer(query: str,
+async def generate_answer(query_input: QueryInput,
                     rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    return {"answer": rag_service.generate_answer(query)}
+    return {"answer": rag_service.generate_answer(query_input.question)}
 
 
 @rag_router.post("/save-document/", status_code=201)
