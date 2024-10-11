@@ -10,6 +10,8 @@ import Footer from "./componentes/Footer";
 import ChatBotPage from "./componentes/chatbot";
 import FileUpload from "./componentes/FileUpload"
 
+import Login from "./componentes/Login"; // Importa el componente Login
+
 
 import './componentes/Banner.css';
 import './componentes/Footer.css';
@@ -43,10 +45,10 @@ function App() {
           {}
           <Route path="/chatbot" element={<ChatBotPage />} />
           <Route path="/FileUpload" element={<FileUpload />} />
+          <Route path="/login" element={<Login />} /> 
         </Routes>
       </div>
     </Router>
   );
 }
-
 export default App;

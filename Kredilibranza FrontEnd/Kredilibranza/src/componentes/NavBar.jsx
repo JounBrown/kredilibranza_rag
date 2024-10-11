@@ -1,14 +1,16 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import './NavBar.css';
+
 
 function NavBar() {
   const location = useLocation();
+  const navigate = useNavigate(); // Hook para redireccionar programáticamente
   const isChatbotPage = location.pathname === "/chatbot";
+  const [showLogin, setShowLogin] = useState(false);
 
   return (
     <nav id="navegacion">
-      {}
       {!isChatbotPage && (
         <>
           <img src="/img/logo sin fondo.png" alt="Kredilibranza Logo" className="logo" />
@@ -21,11 +23,14 @@ function NavBar() {
             <li><Link to="/#contacto">Contáctanos</Link></li>
             <li><Link to="/chatbot">ChatBot</Link></li>
             <li><Link to="/FileUpload">RAG</Link></li>
+            <li>
+              <button className="login" onClick={() => navigate('/login')}>
+                Iniciar sesión
+              </button>
+            </li>
           </ul>
         </>
       )}
-
-      {}
       {isChatbotPage && (
         <ul>
           <li>
@@ -36,5 +41,4 @@ function NavBar() {
     </nav>
   );
 }
-
 export default NavBar;

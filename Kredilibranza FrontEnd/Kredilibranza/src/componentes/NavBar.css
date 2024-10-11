@@ -85,3 +85,17 @@ nav ul li a:hover {
     font-family: Arial, sans-serif;
     font-size: x-large;
 }
+
+.login{
+    border-radius: 20px;
+    background-color: #e7771c;
+    height: 40px;
+    width: 120px;
+    color: #004080;
+    font-weight: bold;
+    font-size:medium; 
+}
+
+button:hover{
+    transform: scale(1.1);
+}
