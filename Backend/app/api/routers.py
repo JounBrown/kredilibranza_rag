@@ -39,8 +39,8 @@ async def upload_pdf(file: UploadFile = File(...),
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
     content = await file.read()
     text = extract_text_from_pdf(content)
-    rag_service.save_document(content=text)
-    return {"status": "PDF uploaded and content saved successfully"}
+    document_id = rag_service.save_document(content=text)
+    return {"status": "PDF uploaded and content saved successfully", "id":document_id}
 
 
 @rag_router.post("/upload-docx/", status_code=201)
@@ -50,6 +50,12 @@ async def upload_docx(file: UploadFile = File(...),
         raise HTTPException(status_code=400, detail="El archivo debe ser un DOCX")
     content = await file.read()
     text = extract_text_from_docx(content)
-    rag_service.save_document(content=text)
-    return {"status": "DOCX uploaded and content saved successfully"}
+    document_id = rag_service.save_document(content=text)
+    return {"status": "DOCX uploaded and content saved successfully", "id":document_id}
+
+@rag_router.delete("/delete-document/{document_id}", status_code=200)
+def delete_document(document_id: str,
+                    rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+    rag_service.delete_document(document_id=document_id)
+    return {"status": "Document deleted successfully"}
 

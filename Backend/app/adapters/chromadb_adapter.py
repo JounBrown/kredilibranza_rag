@@ -1,13 +1,13 @@
 import chromadb
+from chromadb.config import Settings
 from typing import List
 from app.core import ports
 from app.core import models
 
-
 class ChromaDBAdapter(ports.DocumentRepositoryPort):
     def __init__(self, number_of_vectorial_results: int) -> None:
-        self.client = chromadb.Client()
-        self.collection = self.client.create_collection("documents")
+        self.client = chromadb.Client(Settings(persist_directory="./chromadb_data"))
+        self.collection = self.client.get_or_create_collection("documents")
         self._number_of_vectorial_results = number_of_vectorial_results
 
     def save_document(self, document: models.Document) -> None:
@@ -24,7 +24,10 @@ class ChromaDBAdapter(ports.DocumentRepositoryPort):
         print(query)
         print(f"Results: {results}")
         documents = []
-        for i, doc_id_list in enumerate(results['ids']):
-            for doc_id in doc_id_list:
-                documents.append(models.Document(id=doc_id, content=results['documents'][i][0]))
+        for doc_ids, docs in zip(results['ids'], results['documents']):
+            for doc_id, doc_content in zip(doc_ids, docs):
+                documents.append(models.Document(id=doc_id, content=doc_content))
         return documents
+
+    def delete_document(self, document_id: str) -> None:
+        self.collection.delete(ids=[document_id])

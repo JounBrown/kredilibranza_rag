@@ -13,6 +13,9 @@ class DocumentRepositoryPort(ABC):
     def get_documents(self, query: str, n_results: int | None = None) -> List[models.Document]:
         pass
 
+    def delete_document(self, document_id: str) -> None:
+        pass
+
 
 class LlmPort(ABC):
     @abstractmethod
