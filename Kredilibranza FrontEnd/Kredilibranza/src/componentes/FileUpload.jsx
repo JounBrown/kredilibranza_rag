@@ -3,20 +3,49 @@ import { useDropzone } from 'react-dropzone';
 import { X, File, Upload } from 'lucide-react';
 import Button from './Button';
 import './FileUpload.css'; // Importa la hoja de estilos CSS
+import axios from 'axios';
 
 export default function FileUpload() {
   const [files, setFiles] = useState([]);
 
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles(prevFiles => [
-      ...prevFiles,
-      ...acceptedFiles.map(file => 
-        Object.assign(file, {
-          preview: URL.createObjectURL(file)
-        })
-      )
-    ]);
-  }, []);
+    acceptedFiles.forEach(async(file)=>{
+      const formData = new FormData();
+      formData.append('file', file);
+
+      let uploadUrl = '';
+      if (file.type === 'application/pdf') {
+        uploadUrl = 'http://localhost:8000/upload-pdf/';
+      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        uploadUrl = 'http://localhost:8000/upload-docx/';
+      } else {
+        alert('Tipo de archivo no soportado');
+        return;
+      }
+
+      try {
+        const response = await axios.post(uploadUrl, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        const documentId = response.data.id;
+        setFiles((prevFiles) => [
+          ...prevFiles,
+          {
+            file,
+            preview: URL.createObjectURL(file),
+            id: documentId, // Guardamos el ID retornado por el backend
+          },
+        ]);
+      } catch (error) {
+        console.error('Error al subir el archivo:', error);
+      }
+
+    });
+  },[]); 
+
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -26,11 +55,15 @@ export default function FileUpload() {
     }
   });
 
-  const removeFile = (file) => {
-    const newFiles = [...files];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setFiles(newFiles);
-    URL.revokeObjectURL(file.preview); // Limpieza del objeto URL
+  const removeFile = async (fileObj) => {
+    try {
+      await axios.delete(`http://localhost:8000/delete-document/${fileObj.id}`);
+      const newFiles = files.filter((f) => f.id !== fileObj.id);
+      setFiles(newFiles);
+      URL.revokeObjectURL(fileObj.preview); // Limpieza del objeto URL
+    } catch (error) {
+      console.error('Error al eliminar el archivo:', error);
+    }
   };
 
   return (
@@ -55,14 +88,14 @@ export default function FileUpload() {
           <div className="uploaded-files-list">
             <h2 className="text-2xl font-semibold mb-4">Documentos Cargados</h2>
             <ul>
-              {files.map((file) => (
-                <li key={file.name} className="uploaded-file-item">
+              {files.map((fileObj) => (
+                <li key={fileObj.id} className="uploaded-file-item">
                   <div className="file-info">
                     <File className="text-blue-500 mr-3" size={24} />
-                    <span className="file-name">{file.name}</span>
+                    <span className="file-name">{fileObj.file.name}</span>
                   </div>
                   <Button
-                    onClick={() => removeFile(file)}
+                    onClick={() => removeFile(fileObj)}
                     className="remove-button flex items-center"
                   >
                     <X size={20} />

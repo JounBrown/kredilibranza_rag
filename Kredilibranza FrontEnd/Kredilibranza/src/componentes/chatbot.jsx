@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './chatbot.css';
 
 function ChatBotPage() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const messagesEndRef = useRef(null);
 
   const handleSendMessage = async () => {
     if (inputValue.trim() === '') return;
     const userMessage = { role: 'user', content: inputValue };
     setMessages([...messages, userMessage]);
     setInputValue('');
-    const botResponse = await getBotResponse(inputValue);
-    setMessages((prevMessages) => [...prevMessages, botResponse]);
+    try {
+      const botResponse = await getBotResponse(inputValue);
+      setMessages((prevMessages) => [...prevMessages, botResponse]);
+    } catch (error) {
+      console.error('Error al obtener respuesta del bot:', error);
+      setMessages((prevMessages) => [...prevMessages, { role: 'bot', content: 'Error al obtener respuesta del bot.' }]);
+    }
   };
 
   const getBotResponse = async ( message)=>{
@@ -22,30 +28,35 @@ function ChatBotPage() {
         'Content-Type': 'application/json',},
         body: JSON.stringify({question:message}),
       });
-      
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
       const data = await response.json();
-      return { role: 'bot', content: data.answer }; // Ajusta según la estructura de la respuesta
+      return { role: 'bot', content: data.answer }; 
     } catch (error) {
-      console.error('Error al obtener respuesta del bot:', error);
-      return { role: 'bot', content: 'Error al obtener respuesta del bot.' };
+      throw error;      
     }
   };
+
+  // Función para desplazar el scroll hacia abajo al agregar un nuevo mensaje
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
 
   return (
     <div className="chat-container">
       <h1>ChatBot Kredilibranza</h1>
       <div className="chat-window">
-        {}
         <div className="messages-container">
           {messages.map((message, index) => (
             <div key={index} className={`message ${message.role}`}>
               {message.content}
             </div>
           ))}
+          <div ref={messagesEndRef} /> {/*en prueba*/}
         </div>
 
-        {}
         <div className="input-container">
           <input
             type="text"
