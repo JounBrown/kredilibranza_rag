@@ -22,10 +22,10 @@ function NavBar() {
             <li><Link to="/#quienes-somos">¿Quiénes Somos?</Link></li>
             <li><Link to="/#contacto">Contáctanos</Link></li>
             <li><Link to="/chatbot">ChatBot</Link></li>
-            <li><Link to="/FileUpload">RAG</Link></li>
+            <li><Link to="/FileUpload">Administrador</Link></li>
             <li>
               <button className="login" onClick={() => navigate('/login')}>
-                Iniciar sesión
+                Login
               </button>
             </li>
           </ul>
