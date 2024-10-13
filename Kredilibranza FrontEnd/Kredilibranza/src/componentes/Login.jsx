@@ -9,15 +9,39 @@ import './Login.css';
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Iniciar sesión con:', username, password);
+    setError('');
+    try {
+      const response = await fetch('http://localhost:8000/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          username,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Nombre de usuario o contraseña incorrectos');
+      }
+
+      const data = await response.json();
+      // Guarda el token en el almacenamiento local o en el estado global
+      localStorage.setItem('token', data.access_token);
+      // Redirige a la página principal o a la que desees
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  // Manejador del botón de cerrar para redirigir a la página principal
   const handleClose = () => {
     navigate('/'); // Redirige a la página principal cuando se haga clic en el botón X
   };
@@ -30,13 +54,15 @@ export default function Login() {
         <button
           className="close-button"
           aria-label="Cerrar"
-          onClick={handleClose} // Llama a `handleClose` para cerrar el login
+          onClick={handleClose}
         >
-          <X size={24} /> {/* Asegúrate de que `X` esté bien importado */}
+          <X size={24} />
         </button>
 
         {/* Título del Formulario */}
         <h1 className="text-3xl font-bold text-center mb-8">Iniciar Sesión</h1>
+
+        {error && <p className="error-message">{error}</p>}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="login-field">
@@ -76,4 +102,6 @@ export default function Login() {
       </div>
     </div>
   );
+
+  
 }

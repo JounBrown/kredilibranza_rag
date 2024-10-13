@@ -7,7 +7,13 @@ function NavBar() {
   const location = useLocation();
   const navigate = useNavigate(); // Hook para redireccionar programáticamente
   const isChatbotPage = location.pathname === "/chatbot";
-  const [showLogin, setShowLogin] = useState(false);
+  const token = localStorage.getItem('token');
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
 
   return (
     <nav id="navegacion">
@@ -22,12 +28,22 @@ function NavBar() {
             <li><Link to="/#quienes-somos">¿Quiénes Somos?</Link></li>
             <li><Link to="/#contacto">Contáctanos</Link></li>
             <li><Link to="/chatbot">ChatBot</Link></li>
-            <li><Link to="/FileUpload">Administrador</Link></li>
-            <li>
-              <button className="login" onClick={() => navigate('/login')}>
-                Login
-              </button>
-            </li>
+            {token ? (
+              <>
+                <li><Link to="/fileupload">Administrador</Link></li>
+                <li>
+                  <button className="login" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li>
+                <button className="login" onClick={() => navigate('/login')}>
+                  Login
+                </button>
+              </li>
+            )}
           </ul>
         </>
       )}

@@ -22,11 +22,12 @@ export default function FileUpload() {
         alert('Tipo de archivo no soportado');
         return;
       }
-
+      const token = localStorage.getItem('token');
       try {
         const response = await axios.post(uploadUrl, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`,
           },
         });
 
@@ -56,8 +57,13 @@ export default function FileUpload() {
   });
 
   const removeFile = async (fileObj) => {
+    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:8000/delete-document/${fileObj.id}`);
+      await axios.delete(`http://localhost:8000/delete-document/${fileObj.id}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       const newFiles = files.filter((f) => f.id !== fileObj.id);
       setFiles(newFiles);
       URL.revokeObjectURL(fileObj.preview); // Limpieza del objeto URL

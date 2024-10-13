@@ -19,30 +19,29 @@ function ChatBotPage() {
       setMessages((prevMessages) => [...prevMessages, { role: 'bot', content: 'Error al obtener respuesta del bot.' }]);
     }
   };
-
-  const getBotResponse = async ( message)=>{
+  
+  const getBotResponse = async (message) => {
     try {
-      const response = await fetch(`http://localhost:8000/generate-answer/`, {
+      const response = await fetch('http://localhost:8000/generate-answer/', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',},
-        body: JSON.stringify({question:message}),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: message }),
       });
       if (!response.ok) {
         throw new Error('Error en la respuesta del servidor');
       }
       const data = await response.json();
-      return { role: 'bot', content: data.answer }; 
+      return { role: 'bot', content: data.answer };
     } catch (error) {
-      throw error;      
+      throw error;
     }
   };
-
-  // Función para desplazar el scroll hacia abajo al agregar un nuevo mensaje
+  
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
 
   return (
     <div className="chat-container">
@@ -54,7 +53,7 @@ function ChatBotPage() {
               {message.content}
             </div>
           ))}
-          <div ref={messagesEndRef} /> {/*en prueba*/}
+          <div ref={messagesEndRef}/> 
         </div>
 
         <div className="input-container">
@@ -71,5 +70,4 @@ function ChatBotPage() {
     </div>
   );
 }
-
 export default ChatBotPage;
