@@ -10,7 +10,7 @@ import Footer from "./componentes/Footer";
 import ChatBotPage from "./componentes/chatbot";
 import FileUpload from "./componentes/FileUpload";
 
-import Login from "./componentes/Login"; // Importa el componente Login
+import Login from "./componentes/Login"; 
 
 import './componentes/Banner.css';
 import './componentes/Footer.css';
@@ -21,7 +21,6 @@ import './componentes/Simulador.css';
 import './componentes/Condiciones.css';
 import './componentes/chatbot.css';
 
-// Definir el componente PrivateRoute
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
   return token ? children : <Navigate to="/login" replace />;
@@ -33,7 +32,6 @@ function App() {
       <div>
         <NavBar />
         <Routes>
-          {/* Ruta pública: Página principal */}
           <Route
             path="/"
             element={
@@ -48,10 +46,8 @@ function App() {
             }
           />
 
-          {/* Ruta pública: Login */}
           <Route path="/login" element={<Login />} />
 
-          {/* Rutas protegidas */}
           <Route path="/chatbot"element={<ChatBotPage />}/>
 
           <Route
@@ -60,15 +56,11 @@ function App() {
               <PrivateRoute>
                 <FileUpload />
               </PrivateRoute>
-            }
-          />
-
-          {/* Redirige cualquier otra ruta a /login */}
+            }/>
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>
     </Router>
   );
 }
-
 export default App;

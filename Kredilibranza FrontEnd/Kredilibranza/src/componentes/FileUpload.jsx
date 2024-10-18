@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { X, File, Upload } from 'lucide-react';
 import Button from './Button';
-import './FileUpload.css'; // Importa la hoja de estilos CSS
+import './FileUpload.css'; 
 import axios from 'axios';
 
 export default function FileUpload() {
@@ -37,7 +37,7 @@ export default function FileUpload() {
           {
             file,
             preview: URL.createObjectURL(file),
-            id: documentId, // Guardamos el ID retornado por el backend
+            id: documentId,
           },
         ]);
       } catch (error) {
@@ -66,15 +66,15 @@ export default function FileUpload() {
       });
       const newFiles = files.filter((f) => f.id !== fileObj.id);
       setFiles(newFiles);
-      URL.revokeObjectURL(fileObj.preview); // Limpieza del objeto URL
+      URL.revokeObjectURL(fileObj.preview);
     } catch (error) {
       console.error('Error al eliminar el archivo:', error);
     }
   };
 
   return (
-    <div className="file-upload-container"> {/* Contenedor principal centrado */}
-      <div className="file-upload-card"> {/* Tarjeta principal */}
+    <div className="file-upload-container">
+      <div className="file-upload-card">
         <h1 className="text-3xl font-bold text-center mb-8">Carga de Documentos</h1>
         
         <div 
