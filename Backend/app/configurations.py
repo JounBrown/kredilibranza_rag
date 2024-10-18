@@ -12,3 +12,7 @@ class Configs(pydantic_settings.BaseSettings):
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
+    
+    
+    mongodb_uri: str
+    mongodb_name: str

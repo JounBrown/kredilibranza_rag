@@ -9,6 +9,9 @@ from app.configurations import Configs
 from app.core.utils import extract_text_from_pdf, extract_text_from_docx
 from app.core.auth import get_current_user
 from app.core.models import User
+from app.core.schemas import FormData
+from app.core.database import db
+from datetime import datetime, date
 
 configs = Configs()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
@@ -87,4 +90,29 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+
+
+
+@rag_router.post("/submit-form/", status_code=201)
+async def submit_form(form_data: FormData):
+    print("Datos recibidos:", form_data)
+    if not form_data.politica_privacidad:
+        raise HTTPException(status_code=400, detail="Debe aceptar la política de privacidad.")
+    try:
+        
+        if isinstance(form_data.fecha_nacimiento, date):
+            form_data.fecha_nacimiento = datetime.combine(form_data.fecha_nacimiento, datetime.min.time())
+        result = await db["form_submissions"].insert_one(form_data.dict())
+        if result.inserted_id:
+            print("Datos guardados en MongoDB con ID:", result.inserted_id)
+            return {"status": "Formulario enviado exitosamente"}
+        else:
+            print("Error al insertar datos en MongoDB")
+            raise HTTPException(status_code=500, detail="Error al guardar los datos.")
+    except Exception as e:
+        print(f"Error al insertar en MongoDB: {e}")
+        raise HTTPException(status_code=500, detail="Error al guardar los datos.")
+
 
