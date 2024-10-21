@@ -13,6 +13,12 @@ from app.core.schemas import FormData
 from app.core.database import db
 from datetime import datetime, date
 
+import aiosmtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from app.configurations import Configs
+
+
 configs = Configs()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
@@ -95,18 +101,61 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 
+
+async def send_email_notification(form_data: FormData, configs: Configs):
+    # Crear el mensaje de correo electrónico
+    message = MIMEMultipart()
+    message["From"] = configs.email_from
+    message["To"] = configs.email_to
+    message["Subject"] = configs.email_subject
+
+    # Crear el cuerpo del correo electrónico
+    body = f"""
+    Se ha recibido un nuevo registro:
+
+    Nombre Completo: {form_data.nombre_completo}
+    Cédula: {form_data.cedula}
+    Convenio: {form_data.convenio}
+    Teléfono: {form_data.telefono}
+    Fecha de Nacimiento: {form_data.fecha_nacimiento.strftime('%Y-%m-%d')}
+    """
+
+    message.attach(MIMEText(body, "plain"))
+
+    # Enviar el correo electrónico
+    try:
+        await aiosmtplib.send(
+            message,
+            hostname=configs.email_smtp_server,
+            port=configs.email_smtp_port,
+            start_tls=True,
+            username=configs.email_username,
+            password=configs.email_password,
+        )
+        print("Correo electrónico de notificación enviado exitosamente.")
+    except Exception as e:
+        print(f"Error al enviar el correo electrónico: {e}")
+
+
+
+
+
 @rag_router.post("/submit-form/", status_code=201)
 async def submit_form(form_data: FormData):
     print("Datos recibidos:", form_data)
     if not form_data.politica_privacidad:
         raise HTTPException(status_code=400, detail="Debe aceptar la política de privacidad.")
     try:
-        
         if isinstance(form_data.fecha_nacimiento, date):
             form_data.fecha_nacimiento = datetime.combine(form_data.fecha_nacimiento, datetime.min.time())
         result = await db["form_submissions"].insert_one(form_data.dict())
         if result.inserted_id:
             print("Datos guardados en MongoDB con ID:", result.inserted_id)
+            
+            # Enviar correo electrónico de notificación
+            configs = Configs()
+            await send_email_notification(form_data, configs)
+            
             return {"status": "Formulario enviado exitosamente"}
         else:
             print("Error al insertar datos en MongoDB")
