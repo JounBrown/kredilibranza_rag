@@ -1,6 +1,8 @@
 from app.core.models import Document
 from app.core import ports
 
+from app.core.ports import DocumentTextExtractorPort
+
 from app.core.ports import FormRepositoryPort
 from app.core.schemas import FormData
 from datetime import datetime, date
@@ -32,6 +34,16 @@ class RAGService:
 
     def delete_document(self, document_id: str) -> None:
         self.document_repo.delete_document(document_id)
+
+
+class DocumentService:
+    def __init__(self, text_extractor: DocumentTextExtractorPort):
+        self.text_extractor = text_extractor
+
+    def extract_text(self, file_bytes: bytes) -> str:
+        return self.text_extractor.extract_text(file_bytes)
+
+
 
 
 class FormSubmissionService:

@@ -7,46 +7,49 @@ import axios from 'axios';
 
 export default function FileUpload() {
   const [files, setFiles] = useState([]);
+  const [error, setError] = useState('');
+
+  // Función reutilizable para cargar archivos
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const uploadUrl = 'http://localhost:8000/upload-file/';
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await axios.post(uploadUrl, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      // Aquí nos aseguramos de que `documentId` se establezca correctamente
+      const documentId = response.data.inserted_id;  // Cambié `id` por `inserted_id` para concordar con la respuesta del backend
+      setFiles((prevFiles) => [
+        ...prevFiles,
+        {
+          file,
+          preview: URL.createObjectURL(file),
+          id: documentId,  // Aseguramos que el ID se almacene correctamente
+        },
+      ]);
+    } catch (error) {
+      console.error('Error al subir el archivo:', error);
+      setError('Error al subir el archivo.');
+    }
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
-    acceptedFiles.forEach(async(file)=>{
-      const formData = new FormData();
-      formData.append('file', file);
-
-      let uploadUrl = '';
-      if (file.type === 'application/pdf') {
-        uploadUrl = 'http://localhost:8000/upload-pdf/';
-      } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        uploadUrl = 'http://localhost:8000/upload-docx/';
+    acceptedFiles.forEach((file) => {
+      if (file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        uploadFile(file);
       } else {
-        alert('Tipo de archivo no soportado');
-        return;
+        setError('Tipo de archivo no soportado');
       }
-      const token = localStorage.getItem('token');
-      try {
-        const response = await axios.post(uploadUrl, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        const documentId = response.data.id;
-        setFiles((prevFiles) => [
-          ...prevFiles,
-          {
-            file,
-            preview: URL.createObjectURL(file),
-            id: documentId,
-          },
-        ]);
-      } catch (error) {
-        console.error('Error al subir el archivo:', error);
-      }
-
     });
-  },[]); 
-
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -57,9 +60,14 @@ export default function FileUpload() {
   });
 
   const removeFile = async (fileObj) => {
+    if (!fileObj.id) {
+      setError('Error: No se puede eliminar el archivo porque falta el ID');
+      return;
+    }
+
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:8000/delete-document/${fileObj.id}`,{
+      await axios.delete(`http://localhost:8000/delete-document/${fileObj.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -69,6 +77,7 @@ export default function FileUpload() {
       URL.revokeObjectURL(fileObj.preview);
     } catch (error) {
       console.error('Error al eliminar el archivo:', error);
+      setError('Error al eliminar el archivo.');
     }
   };
 
@@ -89,6 +98,12 @@ export default function FileUpload() {
             <p className="text-lg text-gray-500">Arrastra y suelta archivos PDF o DOCX aquí, o haz clic para seleccionar archivos</p>
           )}
         </div>
+
+        {error && (
+          <div className="error-message">
+            <p className="text-red-500">{error}</p>
+          </div>
+        )}
 
         {files.length > 0 && (
           <div className="uploaded-files-list">

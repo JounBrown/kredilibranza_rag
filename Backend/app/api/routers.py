@@ -9,7 +9,9 @@ from app.core.utils import extract_text_from_pdf, extract_text_from_docx
 from app.core.auth import get_current_user
 from app.core.models import User
 
-
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from app.usecases import DocumentService, RAGService
+from app.api.dependencies import get_document_service, RAGServiceSingleton
 
 from app.core.schemas import FormData
 from app.configurations import Configs
@@ -40,44 +42,27 @@ def save_document(document: DocumentInput,
     rag_service.save_document(content=document.content)
     return {"status": "Document saved successfully"}
 
-
-
-
-@rag_router.post("/upload-pdf/", status_code=201)
-async def upload_pdf(
-        file: UploadFile = File(...),
-        rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance),
-        current_user: User = Depends(get_current_user)
+@rag_router.post("/upload-file/", status_code=201)
+async def upload_file(
+    file: UploadFile = File(...),
+    document_service: DocumentService = Depends(get_document_service),
+    rag_service: RAGService = Depends(RAGServiceSingleton.get_instance)
 ):
-    if file.content_type != 'application/pdf':
-        raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
-    content = await file.read()
-    text = extract_text_from_pdf(content)
-    document_id = rag_service.save_document(content=text)
-    return {"status": "PDF uploaded and content saved successfully", "id":document_id}
+    file_content = await file.read()
+    extracted_text = document_service.extract_text(file_content)
+    document_id = rag_service.save_document(extracted_text)
+    return {"inserted_id": document_id}
 
-@rag_router.post("/upload-docx/", status_code=201)
-async def upload_docx(
-        file: UploadFile = File(...),
-        rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance),
-        current_user:User=Depends(get_current_user),
 
-):
-    if file.content_type != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        raise HTTPException(status_code=400, detail="El archivo debe ser un DOCX")
-    content = await file.read()
-    text = extract_text_from_docx(content)
-    document_id = rag_service.save_document(content=text)
-    return {"status": "DOCX uploaded and content saved successfully", "id":document_id}
 
 @rag_router.delete("/delete-document/{document_id}", status_code=200)
-def delete_document(
-        document_id: str,
-        rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance),
-        current_user: User = Depends(get_current_user),
+async def delete_document(
+    document_id: str,
+    rag_service: RAGService = Depends(RAGServiceSingleton.get_instance)
 ):
-    rag_service.delete_document(document_id=document_id)
+    rag_service.delete_document(document_id)  # Usar RAGService para eliminar el documento
     return {"status": "Document deleted successfully"}
+
 
 
 @rag_router.post("/token", response_model=dict)
