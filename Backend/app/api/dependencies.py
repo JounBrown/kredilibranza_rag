@@ -5,6 +5,7 @@ from app import configurations
 
 from app.adapters.mongodb_adapter import MongoDBAdapter
 from app.usecases import FormSubmissionService
+from app.configurations import Configs
 
 
 class RAGServiceSingleton:
@@ -23,10 +24,20 @@ class RAGServiceSingleton:
 
 class FormServiceSingleton:
     _instance = None
+    _configs = None
 
     @classmethod
     def get_instance(cls) -> FormSubmissionService:
         if cls._instance is None:
+            # Inicializar configuraciones
+            cls._configs = Configs()
+
+            # Inicializar el repositorio
             form_repository = MongoDBAdapter()
-            cls._instance = FormSubmissionService(form_repository=form_repository)
+
+            # Crear instancia del servicio con todas sus dependencias
+            cls._instance = FormSubmissionService(
+                form_repository=form_repository,
+                configs=cls._configs
+            )
         return cls._instance

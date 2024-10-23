@@ -8,15 +8,14 @@ from app.core.auth import authenticate_user, create_access_token
 from app.core.utils import extract_text_from_pdf, extract_text_from_docx
 from app.core.auth import get_current_user
 from app.core.models import User
+
+
+
 from app.core.schemas import FormData
-
-import aiosmtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from app.configurations import Configs
-
 from app.api.dependencies import FormServiceSingleton
 from app.usecases import FormSubmissionService
+from typing import Dict, Any
 
 configs = Configs()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
@@ -81,7 +80,6 @@ def delete_document(
     return {"status": "Document deleted successfully"}
 
 
-
 @rag_router.post("/token", response_model=dict)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
@@ -95,72 +93,26 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-
-
-
-
-async def send_email_notification(form_data: FormData, configs: Configs):
-    # Crear el mensaje de correo electrónico
-    message = MIMEMultipart()
-    message["From"] = configs.email_from
-    message["To"] = configs.email_to
-    message["Subject"] = configs.email_subject
-
-    # Crear el cuerpo del correo electrónico
-    body = f"""
-    Se ha recibido un nuevo registro:
-
-    Nombre Completo: {form_data.nombre_completo}
-    Cédula: {form_data.cedula}
-    Convenio: {form_data.convenio}
-    Teléfono: {form_data.telefono}
-    Fecha de Nacimiento: {form_data.fecha_nacimiento.strftime('%Y-%m-%d')}
-    """
-
-    message.attach(MIMEText(body, "plain"))
-
-    # Enviar el correo electrónico
-    try:
-        await aiosmtplib.send(
-            message,
-            hostname=configs.email_smtp_server,
-            port=configs.email_smtp_port,
-            start_tls=True,
-            username=configs.email_username,
-            password=configs.email_password,
-        )
-        print("Correo electrónico de notificación enviado exitosamente.")
-    except Exception as e:
-        print(f"Error al enviar el correo electrónico: {e}")
-
-
-
-
-
-@rag_router.post("/submit-form/", status_code=201)
+@rag_router.post("/submit-form/", status_code=201, response_model=Dict[str, Any])
 async def submit_form(
         form_data: FormData,
         form_service: FormSubmissionService = Depends(FormServiceSingleton.get_instance)
 ):
-    print("Datos recibidos:", form_data)
-    if not form_data.politica_privacidad:
-        raise HTTPException(status_code=400, detail="Debe aceptar la política de privacidad.")
-    try:
-        inserted_id = await form_service.submit_form(form_data)
-        if inserted_id:
-            print("Datos guardados en MongoDB con ID:", inserted_id)
+    success, message, data = await form_service.submit_form(form_data)
 
-            # Enviar correo electrónico de notificación
-            configs = Configs()
-            await send_email_notification(form_data, configs)
+    if not success:
+        raise HTTPException(status_code=400, detail=message)
 
-            return {"status": "Formulario enviado exitosamente"}
-        else:
-            print("Error al insertar datos en MongoDB")
-            raise HTTPException(status_code=500, detail="Error al guardar los datos.")
-    except Exception as e:
-        print(f"Error al insertar en MongoDB: {e}")
-        raise HTTPException(status_code=500, detail="Error al guardar los datos.")
+    response_data = {
+        "status": message,
+        "inserted_id": data.get("inserted_id"),
+        "email_sent": data.get("email_sent", False)
+    }
+
+    return response_data
+
+
+
 
 
 
