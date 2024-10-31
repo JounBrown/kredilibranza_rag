@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "kredilibranza-backend"
+version = "0.1.0"
+description = ""
+authors = ["jounBrown <vsvrrara@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-multipart = "^0.0.12"
+protobuf = ">=3.20.0,<3.21.0"
+fastapi = "^0.100.0"
+uvicorn = "^0.22.0"
+chromadb = "^0.5.5"
+onnxruntime = "^1.18.1"
+pydantic-settings = "^2.4.0"
+python-dotenv = "^1.0.1"
+pypdf2 = "^3.0.1"
+python-docx = "^1.1.2"
+openai = "0.28"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+bcrypt = "4.0.1"
+motor = "^3.6.0"
+pydantic = "^2.9.2"
+aiosmtplib = "^3.0.2"
+coverage = "^7.6.4"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+pytest = "^8.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
