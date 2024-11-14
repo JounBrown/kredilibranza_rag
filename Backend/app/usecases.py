@@ -4,7 +4,6 @@ from email.mime.text import MIMEText
 from typing import Any, Dict, List, Optional, Tuple
 
 import aiosmtplib
-
 from app.configurations import Configs
 from app.core import ports
 from app.core.auth import create_access_token, verify_password
