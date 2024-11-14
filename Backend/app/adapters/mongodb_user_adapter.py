@@ -1,7 +1,9 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.configurations import Configs
-from app.core.ports import UserRepositoryPort
 from app.core.models import UserInDB
+from app.core.ports import UserRepositoryPort
+
 
 class MongoDBUserAdapter(UserRepositoryPort):
     def __init__(self):

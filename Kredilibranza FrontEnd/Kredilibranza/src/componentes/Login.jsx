@@ -33,7 +33,6 @@ export default function Login() {
       }
 
       const data = await response.json();
-      // Guarda el token en el almacenamiento local o en el estado global
       localStorage.setItem('token', data.access_token);
       // Redirige a la página principal o a la que desees
       navigate('/');
@@ -43,14 +42,12 @@ export default function Login() {
   };
 
   const handleClose = () => {
-    navigate('/'); // Redirige a la página principal cuando se haga clic en el botón X
+    navigate('/'); 
   };
 
   return (
     <div className="login-container">
-      {/* Formulario de Login */}
       <div className="login-card">
-        {/* Botón de Cerrar dentro del formulario */}
         <button
           className="close-button"
           aria-label="Cerrar"
@@ -59,7 +56,6 @@ export default function Login() {
           <X size={24} />
         </button>
 
-        {/* Título del Formulario */}
         <h1 className="text-3xl font-bold text-center mb-8">Iniciar Sesión</h1>
 
         {error && <p className="error-message">{error}</p>}

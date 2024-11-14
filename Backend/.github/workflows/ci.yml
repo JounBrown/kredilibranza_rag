@@ -1,0 +1,58 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: --quiet
+
+    steps:
+      # Paso 1: Checkout del código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Paso 2: Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      # Paso 3: Instalar Poetry
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      # Paso 4: Instalar dependencias
+      - name: Install dependencies
+        run: |
+          poetry install
+          poetry run pip install pytest pytest-asyncio httpx
+
+      # Paso 5: Configurar variables de entorno (se requieren ajustes)
+      - name: Set environment variables
+        env:
+          MONGODB_URI: "mongodb://localhost:27017/test_db"
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_FROM: "from@example.com"
+          EMAIL_TO: "to@example.com"
+        run: echo "Environment variables set"
+
+      # Paso 6: Ejecutar pruebas
+      - name: Run tests
+        run: |
+          poetry run pytest tests/cases_test.py --maxfail=1 --disable-warnings

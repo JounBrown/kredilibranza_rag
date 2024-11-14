@@ -1,11 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import List, Protocol,Any,Dict
+from typing import Any, Dict, List, Protocol
 
 from app.core import models
-from abc import ABC, abstractmethod
-from app.core.models import UserInDB  
-
-from typing import Optional
+from app.core.models import UserInDB
 
 
 class DocumentRepositoryPort(ABC):
@@ -26,16 +23,17 @@ class LlmPort(ABC):
     def generate_text(self, prompt: str, retrieval_context: str) -> str:
         pass
 
+
 class DocumentTextExtractorPort(ABC):
     @abstractmethod
     def extract_text(self, file_bytes: bytes) -> str:
         pass
 
+
 class UserRepositoryPort(ABC):
     @abstractmethod
     async def get_user_by_username(self, username: str) -> UserInDB | None:
         pass
-
 
 
 class FormRepositoryPort(Protocol):

@@ -1,20 +1,17 @@
-from app.core.models import Document
-from app.core import ports
-from app.core.ports import DocumentTextExtractorPort
-from app.core.ports import FormRepositoryPort
-from app.core.schemas import FormData
-from datetime import datetime, date
-from email.mime.text import MIMEText
+from datetime import date, datetime, timedelta
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from typing import Any, Dict, List, Optional, Tuple
+
 import aiosmtplib
-from typing import Dict, Any, Tuple, Optional, List
-from bson import ObjectId
-from app.core.schemas import Submission
-from app.core.ports import UserRepositoryPort
-from app.core.auth import verify_password, create_access_token
-from app.core.models import UserInDB
-from datetime import timedelta
+
 from app.configurations import Configs
+from app.core import ports
+from app.core.auth import create_access_token, verify_password
+from app.core.models import Document
+from app.core.ports import DocumentTextExtractorPort, FormRepositoryPort, UserRepositoryPort
+from app.core.schemas import FormData, Submission
+
 
 class RAGService:
     def __init__(self, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort):
@@ -46,14 +43,13 @@ class RAGService:
 class DocumentService:
     def __init__(self, text_extractor: DocumentTextExtractorPort):
         self.text_extractor = text_extractor
+
     def extract_text(self, file_bytes: bytes) -> str:
         return self.text_extractor.extract_text(file_bytes)
 
 
-
 class FormSubmissionService:
     def __init__(self, form_repository: FormRepositoryPort, configs):
-
         self.form_repository = form_repository
         self.configs = configs
 
@@ -94,10 +90,7 @@ class FormSubmissionService:
 
         try:
             if isinstance(form_data.fecha_nacimiento, date):
-                form_data.fecha_nacimiento = datetime.combine(
-                    form_data.fecha_nacimiento,
-                    datetime.min.time()
-                )
+                form_data.fecha_nacimiento = datetime.combine(form_data.fecha_nacimiento, datetime.min.time())
 
             data = form_data.dict()
             inserted_id = await self.form_repository.insert_form_submission(data)
@@ -108,10 +101,11 @@ class FormSubmissionService:
             str_id = str(inserted_id)
             email_sent = await self._send_email_notification(form_data)
 
-            return True, "Formulario enviado exitosamente", {
-                "inserted_id": str_id,
-                "email_sent": email_sent
-            }
+            return (
+                True,
+                "Formulario enviado exitosamente",
+                {"inserted_id": str_id, "email_sent": email_sent},
+            )
 
         except Exception as e:
             return False, f"Error al procesar el formulario: {str(e)}", {}
@@ -119,7 +113,7 @@ class FormSubmissionService:
     async def get_form_submissions(self, cedula: Optional[str] = None) -> List[Submission]:
         query = {"cedula": cedula} if cedula else {}
         submissions_cursor = self.form_repository.db["form_submissions"].find(query)
-        
+
         submissions = []
         async for submission in submissions_cursor:
             submission_data = {
@@ -133,9 +127,9 @@ class FormSubmissionService:
                 "created_at": submission.get("created_at"),
             }
             submissions.append(Submission(**submission_data))
-        
+
         return submissions
-        
+
 
 class AuthService:
     def __init__(self, user_repo: UserRepositoryPort):
@@ -148,15 +142,12 @@ class AuthService:
             return None
         access_token = create_access_token(
             data={"sub": user.username},
-            expires_delta=timedelta(minutes=self.configs.access_token_expire_minutes)
+            expires_delta=timedelta(minutes=self.configs.access_token_expire_minutes),
         )
         return access_token
-    
+
     async def login(self, username: str, password: str) -> dict:
         token = await self.authenticate_user(username, password)
         if not token:
             return {"error": "Nombre de usuario o contraseña incorrectos"}
         return {"access_token": token, "token_type": "bearer"}
-
-
-

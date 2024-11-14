@@ -1,7 +1,8 @@
+from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field
-from typing import Optional
-from datetime import datetime
+
 
 class FormData(BaseModel):
     nombre_completo: str = Field(..., min_length=1)
@@ -11,6 +12,7 @@ class FormData(BaseModel):
     fecha_nacimiento: datetime
     politica_privacidad: bool
 
+
 class Submission(BaseModel):
     id: str
     nombre_completo: str
@@ -19,7 +21,7 @@ class Submission(BaseModel):
     telefono: str
     fecha_nacimiento: datetime
     politica_privacidad: bool
-    created_at: Optional[datetime]      
+    created_at: Optional[datetime]
 
     class Config:
         orm_mode = True

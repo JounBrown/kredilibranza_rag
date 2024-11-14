@@ -1,5 +1,7 @@
 import openai
+
 from app.core import ports
+
 
 class OpenAIAdapter(ports.LlmPort):
     def __init__(self, api_key: str, model: str, max_tokens: int, temperature: float):
@@ -14,7 +16,10 @@ class OpenAIAdapter(ports.LlmPort):
                 "role": "system",
                 "content": "Eres un asistente que proporciona respuestas basadas en el contexto proporcionado.",
             },
-            {"role": "user", "content": f"Contexto: {retrieval_context}\n\nPregunta: {prompt}"},
+            {
+                "role": "user",
+                "content": f"Contexto: {retrieval_context}\n\nPregunta: {prompt}",
+            },
         ]
         response = openai.ChatCompletion.create(
             model=self._model,

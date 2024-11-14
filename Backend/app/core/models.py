@@ -1,9 +1,8 @@
-import pydantic
 import uuid
-
-from pydantic import BaseModel
 from typing import Optional
 
+import pydantic
+from pydantic import BaseModel
 
 
 def generate_uuid() -> str:
@@ -20,6 +19,7 @@ class User(BaseModel):
     full_name: Optional[str] = None
     hashed_password: str
     disabled: Optional[bool] = None
+
 
 class UserInDB(User):
     hashed_password: str

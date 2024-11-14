@@ -1,8 +1,10 @@
+from typing import Any, Dict
 
 from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.configurations import Configs
 from app.core.ports import FormRepositoryPort
-from typing import Any, Dict
+
 
 class MongoDBAdapter(FormRepositoryPort):
     def __init__(self):

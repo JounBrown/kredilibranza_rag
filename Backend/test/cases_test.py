@@ -1,19 +1,16 @@
-from unittest.mock import Mock, patch, AsyncMock, MagicMock
-import pytest
-from fastapi import HTTPException, Depends
-from app.usecases import RAGService, DocumentService, FormSubmissionService
-from app.core.models import Document
-from app.core.schemas import FormData
-from app.configurations import Configs
-import email
 from base64 import b64decode
-from app.usecases import AuthService
-from app.core.models import UserInDB
 from datetime import timedelta
-from app.core.schemas import Submission
-from app.core.auth import create_access_token, get_current_user
-from jose import JWTError, jwt
-from app.core.auth import verify_password, pwd_context
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
+import pytest
+from fastapi import HTTPException
+from jose import jwt
+
+from app.configurations import Configs
+from app.core.auth import create_access_token, get_current_user, pwd_context, verify_password
+from app.core.models import Document, UserInDB
+from app.core.schemas import FormData
+from app.usecases import AuthService, DocumentService, FormSubmissionService, RAGService
 
 
 def test_generate_answer():
@@ -122,7 +119,7 @@ async def test_send_email_notification():
         convenio="Convenio Ejemplo",
         telefono="123456789",
         fecha_nacimiento="1990-01-01",
-        politica_privacidad=True
+        politica_privacidad=True,
     )
 
     configs = Configs(
@@ -132,7 +129,7 @@ async def test_send_email_notification():
         email_to="to@example.com",
         email_subject="Nuevo registro recibido",
         email_smtp_server="smtp.test.com",
-        email_smtp_port=587
+        email_smtp_port=587,
     )
 
     form_service = FormSubmissionService(form_repository=Mock(), configs=configs)
@@ -168,38 +165,7 @@ async def test_submit_form():
         convenio="Convenio Ejemplo",
         telefono="123456789",
         fecha_nacimiento="1990-01-01",
-        politica_privacidad=True
-    )
-
-    mock_form_repository = Mock()
-    mock_form_repository.insert_form_submission.return_value = "mocked_id"
-    mock_configs = Configs()
-
-    form_service = FormSubmissionService(form_repository=mock_form_repository, configs=mock_configs)
-
-    with patch.object(form_service, '_send_email_notification', return_value=True) as mock_send_email:
-        # 2. Ejecución (Act)
-        success, message, data = await form_service.submit_form(form_data)
-
-        print(f"Success: {success}, Message: '{message}', Data: {data}")
-
-        # 3. Verificación (Assert)
-        assert success is True, "El formulario debería haberse enviado con éxito"
-        assert message == "Formulario enviado exitosamente", "El mensaje no coincide con el esperado"
-        assert data["inserted_id"] == "mocked_id", "El ID de inserción no coincide con el esperado"
-        assert data["email_sent"] is True, "El envío del correo debería haber sido exitoso"
-
-
-@pytest.mark.asyncio
-async def test_submit_form():
-    # 1. Preparación (Arrange)
-    form_data = FormData(
-        nombre_completo="Juan Pérez",
-        cedula="1234567890",
-        convenio="Convenio Ejemplo",
-        telefono="123456789",
-        fecha_nacimiento="1990-01-01",
-        politica_privacidad=True
+        politica_privacidad=True,
     )
 
     mock_form_repository = Mock()
@@ -208,11 +174,9 @@ async def test_submit_form():
 
     form_service = FormSubmissionService(form_repository=mock_form_repository, configs=mock_configs)
 
-    with patch.object(form_service, '_send_email_notification', new=AsyncMock(return_value=True)) as mock_send_email:
+    with patch.object(form_service, "_send_email_notification", new=AsyncMock(return_value=True)):
         # 2. Ejecución (Act)
         success, message, data = await form_service.submit_form(form_data)
-
-        print(f"Success: {success}, Message: '{message}', Data: {data}")
 
         # 3. Verificación (Assert)
         # Verificar que submit_form retorne un mensaje de éxito y los datos esperados
@@ -238,7 +202,7 @@ async def test_get_form_submissions():
             "telefono": "555-1234",
             "fecha_nacimiento": "1980-01-01T00:00:00",
             "politica_privacidad": True,
-            "created_at": "2023-10-01T12:00:00"
+            "created_at": "2023-10-01T12:00:00",
         },
         {
             "_id": "2",
@@ -248,7 +212,7 @@ async def test_get_form_submissions():
             "telefono": "555-5678",
             "fecha_nacimiento": "1990-05-15T00:00:00",
             "politica_privacidad": True,
-            "created_at": "2023-10-02T15:30:00"
+            "created_at": "2023-10-02T15:30:00",
         },
     ]
 
@@ -288,8 +252,9 @@ async def test_authenticate_user():
     user_in_db = UserInDB(username=username, full_name="Admin", hashed_password=hashed_password)
     mock_user_repo.get_user_by_username = AsyncMock(return_value=user_in_db)
 
-    with patch("app.usecases.verify_password", return_value=True) as mock_verify_password, \
-            patch("app.usecases.create_access_token", return_value="mocked_token") as mock_create_access_token:
+    with patch("app.usecases.verify_password", return_value=True) as mock_verify_password, patch(
+        "app.usecases.create_access_token", return_value="mocked_token"
+    ) as mock_create_access_token:
         token = await auth_service.authenticate_user(username=username, password=password)
 
         # Verificación
@@ -297,7 +262,7 @@ async def test_authenticate_user():
         mock_verify_password.assert_called_once_with(password, user_in_db.hashed_password)
         mock_create_access_token.assert_called_once_with(
             data={"sub": user_in_db.username},
-            expires_delta=timedelta(minutes=configs.access_token_expire_minutes)
+            expires_delta=timedelta(minutes=configs.access_token_expire_minutes),
         )
 
     # Caso 2: Usuario no encontrado
@@ -311,11 +276,12 @@ async def test_authenticate_user():
     token = await auth_service.authenticate_user(username=username, password="wrongpassword")
     assert token is None
 
+
 @pytest.mark.asyncio
 async def test_login():
     # Preparación (Arrange)
     mock_user_repo = AsyncMock()
-    configs = Configs()
+    Configs()
     auth_service = AuthService(user_repo=mock_user_repo)
 
     username = "admin"
@@ -325,9 +291,9 @@ async def test_login():
     user_in_db = UserInDB(username=username, full_name="Admin", hashed_password=hashed_password)
     mock_user_repo.get_user_by_username = AsyncMock(return_value=user_in_db)
 
-    with patch("app.usecases.verify_password", return_value=True) as mock_verify_password, \
-            patch("app.usecases.create_access_token", return_value="mocked_token") as mock_create_access_token:
-
+    with patch("app.usecases.verify_password", return_value=True) as mock_verify_password, patch(
+        "app.usecases.create_access_token", return_value="mocked_token"
+    ) as mock_create_access_token:
         # Ejecución (Act) y Verificación (Assert) para el inicio de sesión exitoso
         response = await auth_service.login(username=username, password=password)
 
@@ -375,7 +341,7 @@ def test_verify_password():
 
 @pytest.mark.asyncio
 async def test_get_current_user_valid():
-    configs = Configs()
+    Configs()
     user_data = {"sub": "test_user"}
     token = create_access_token(data=user_data)
 
@@ -387,16 +353,10 @@ async def test_get_current_user_valid():
 
 @pytest.mark.asyncio
 async def test_get_current_user_invalid():
-    configs = Configs()
+    Configs()
     invalid_token = "invalid.token.value"
 
     with pytest.raises(HTTPException) as excinfo:
         await get_current_user(invalid_token)
     assert excinfo.value.status_code == 401
     assert excinfo.value.detail == "No se pudieron validar las credenciales"
-
-
-
-
-
-

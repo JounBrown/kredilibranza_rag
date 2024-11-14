@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from passlib.context import CryptContext
 from typing import Optional
-from app.core.models import UserInDB
-from app.configurations import Configs
-from app.adapters.mongodb_user_adapter import MongoDBUserAdapter 
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+
+from app.adapters.mongodb_user_adapter import MongoDBUserAdapter
+from app.configurations import Configs
+from app.core.models import UserInDB
 
 configs = Configs()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -14,11 +16,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 user_repo = MongoDBUserAdapter()
 
+
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+
 async def get_user(username: str) -> Optional[UserInDB]:
     return await user_repo.get_user_by_username(username)
+
 
 async def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
     user = await get_user(username)
@@ -26,12 +31,14 @@ async def authenticate_user(username: str, password: str) -> Optional[UserInDB]:
         return None
     return user
 
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=configs.access_token_expire_minutes))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, configs.secret_key, algorithm=configs.algorithm)
     return encoded_jwt
+
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
