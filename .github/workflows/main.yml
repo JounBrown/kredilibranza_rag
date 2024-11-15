@@ -50,18 +50,16 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Verificar el archivo .env creado
+      # 5. Configurar el PYTHONPATH para incluir `Backend`
+      - name: Set PYTHONPATH
+        run: |
+          echo "PYTHONPATH=$(pwd)/Backend" >> $GITHUB_ENV
+          echo "PYTHONPATH configurado a: $(pwd)/Backend"
+
+      # 6. Verificar el contenido del archivo .env
       - name: Verify .env file
         run: |
-          echo "Verificando el contenido del archivo .env:"
           cat .env
-
-      # 6. Cargar variables de entorno desde .env
-      - name: Load environment variables
-        run: |
-          set -a
-          source .env
-          set +a
 
       # 7. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
@@ -72,5 +70,5 @@ jobs:
       # 8. Ejecutar pruebas con pytest
       - name: Run tests
         run: |
-          cd Backend
+          export PYTHONPATH=$(pwd)/Backend
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
