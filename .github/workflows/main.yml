@@ -31,20 +31,10 @@ jobs:
           pip install poetry
           poetry install
 
-      # 4. Depurar y validar secretos antes de crear el archivo .env
-      - name: Debug Secrets
-        run: |
-          echo "Validando secretos..."
-          if [ -z "${{ secrets.MAX_TOKENS }}" ]; then echo "Error: MAX_TOKENS está vacío"; exit 1; fi
-          if [ -z "${{ secrets.TEMPERATURE }}" ]; then echo "Error: TEMPERATURE está vacío"; exit 1; fi
-          if [ -z "${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}" ]; then echo "Error: NUMBER_OF_VECTORIAL_RESULTS está vacío"; exit 1; fi
-          if [ -z "${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" ]; then echo "Error: ACCESS_TOKEN_EXPIRE_MINUTES está vacío"; exit 1; fi
-
-      # 5. Crear el archivo .env usando GitHub Secrets
-      - name: Create .env file from GitHub Secrets
+      # 4. Crear el archivo .env desde GitHub Secrets
+      - name: Create .env file
         working-directory: Backend
         run: |
-          echo "Creando archivo .env con los secretos"
           echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "model=${{ secrets.MODEL }}" >> .env
           echo "max_tokens=${{ secrets.MAX_TOKENS }}" >> .env
@@ -60,25 +50,31 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 6. Verificar el contenido del archivo .env
-      - name: Verify .env file
-        working-directory: Backend
-        run: cat .env
-
-      # 7. Cargar variables de entorno desde .env
-      - name: Load environment variables
+      # 5. Verificar y cargar el archivo .env
+      - name: Verify and load .env file
         working-directory: Backend
         run: |
+          echo "Verificando el contenido del archivo .env:"
+          cat .env
           set -a
           source .env
           set +a
 
-      # 8. Ejecutar pre-commit para análisis de código
+      # 6. Depuración de las variables antes de ejecutar pruebas
+      - name: Debug Environment Variables
+        run: |
+          echo "Debugging environment variables:"
+          echo "MAX_TOKENS=$MAX_TOKENS"
+          echo "TEMPERATURE=$TEMPERATURE"
+          echo "NUMBER_OF_VECTORIAL_RESULTS=$NUMBER_OF_VECTORIAL_RESULTS"
+          echo "ACCESS_TOKEN_EXPIRE_MINUTES=$ACCESS_TOKEN_EXPIRE_MINUTES"
+
+      # 7. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         working-directory: Backend
         run: poetry run pre-commit run --all-files
 
-      # 9. Ejecutar pruebas con pytest
+      # 8. Ejecutar pruebas con pytest
       - name: Run tests
         working-directory: Backend
         run: |
