@@ -42,15 +42,16 @@ jobs:
         working-directory: Backend
         run: poetry install
 
-      # 5. Configurar variables de entorno
+      # 5. Configurar variables de entorno y PYTHONPATH
       - name: Set up environment variables
+        working-directory: Backend
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           OTHER_VAR: ${{ secrets.OTHER_VAR }}
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
           echo "OTHER_VAR=${{ secrets.OTHER_VAR }}" >> $GITHUB_ENV
-        working-directory: Backend
+          echo "PYTHONPATH=${{ github.workspace }}/Backend" >> $GITHUB_ENV
 
       # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
@@ -62,6 +63,7 @@ jobs:
         working-directory: Backend
         env:
           MONGO_URI: "mongodb://localhost:27017/testdb"
+          PYTHONPATH: ${{ github.workspace }}/Backend
         run: |
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
 
