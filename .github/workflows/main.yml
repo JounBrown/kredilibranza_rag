@@ -31,20 +31,25 @@ jobs:
           cd Backend
           poetry install
 
-      # 4. Cargar el archivo .env desde la raíz de Backend
+      # 4. Copiar el archivo .env desde la carpeta Backend
       - name: Set up environment variables
         run: |
-          if [ -f ".env" ]; then cp .env Backend/.env; fi
+          cp Backend/.env .env
           echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
-        working-directory: Backend
 
-      # 5. Ejecutar pre-commit para análisis de código
+      # 5. Verificar el contenido del archivo .env para depuración
+      - name: Debug .env
+        run: |
+          echo "Verificando el contenido de .env"
+          cat .env
+
+      # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         run: |
           cd Backend
           poetry run pre-commit run --all-files
 
-      # 6. Ejecutar pruebas con pytest
+      # 7. Ejecutar pruebas con pytest
       - name: Run tests
         run: |
           cd Backend
