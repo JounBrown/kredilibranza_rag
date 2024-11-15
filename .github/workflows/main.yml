@@ -31,19 +31,19 @@ jobs:
           pip install poetry
           poetry install
 
-      # 4. Crear el archivo .env usando GitHub Secrets
+      # 4. Crear el archivo .env usando GitHub Secrets y depuración adicional
       - name: Create .env file from GitHub Secrets
         working-directory: Backend
         run: |
           echo "Creando archivo .env con los secretos"
           echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "model=${{ secrets.MODEL }}" >> .env
-          echo "max_tokens=\"${{ secrets.MAX_TOKENS }}\"" >> .env
-          echo "temperature=\"${{ secrets.TEMPERATURE }}\"" >> .env
-          echo "number_of_vectorial_results=\"${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}\"" >> .env
+          echo "max_tokens=${{ secrets.MAX_TOKENS }}" >> .env
+          echo "temperature=${{ secrets.TEMPERATURE }}" >> .env
+          echo "number_of_vectorial_results=${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}" >> .env
           echo "secret_key=${{ secrets.SECRET_KEY }}" >> .env
           echo "algorithm=${{ secrets.ALGORITHM }}" >> .env
-          echo "access_token_expire_minutes=\"${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}\"" >> .env
+          echo "access_token_expire_minutes=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
           echo "mongodb_uri=${{ secrets.MONGODB_URI }}" >> .env
           echo "mongodb_name=${{ secrets.MONGODB_NAME }}" >> .env
           echo "email_username=${{ secrets.EMAIL_USERNAME }}" >> .env
@@ -51,14 +51,21 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Verificar el contenido del archivo .env
+      # 5. Verificar que los secretos se han cargado correctamente
+      - name: Debug Secrets
+        run: |
+          echo "Verificando secretos..."
+          echo "max_tokens: ${{ secrets.MAX_TOKENS }}"
+          echo "temperature: ${{ secrets.TEMPERATURE }}"
+          echo "number_of_vectorial_results: ${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}"
+          echo "access_token_expire_minutes: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}"
+
+      # 6. Verificar el contenido del archivo .env
       - name: Verify .env file
         working-directory: Backend
-        run: |
-          echo "Contenido del archivo .env:"
-          cat .env
+        run: cat .env
 
-      # 6. Cargar variables de entorno desde .env
+      # 7. Cargar variables de entorno desde .env
       - name: Load environment variables
         working-directory: Backend
         run: |
@@ -66,12 +73,12 @@ jobs:
           source .env
           set +a
 
-      # 7. Ejecutar pre-commit para análisis de código
+      # 8. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         working-directory: Backend
         run: poetry run pre-commit run --all-files
 
-      # 8. Ejecutar pruebas con pytest y generar reporte de cobertura
+      # 9. Ejecutar pruebas con pytest
       - name: Run tests
         working-directory: Backend
         run: |
