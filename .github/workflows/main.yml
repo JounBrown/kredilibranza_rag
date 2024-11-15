@@ -32,14 +32,20 @@ jobs:
           cd Backend
           poetry install
 
-      # 4. Configurar `PYTHONPATH` para incluir el directorio `Backend`
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
-        working-directory: Backend
+      # 4. Copiar y verificar el archivo .env
+      - name: Copy and verify .env file
+        run: |
+          if [ -f "Backend/.env" ]; then cp Backend/.env .env; fi
+          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+          echo "Contenido del archivo .env:"
+          cat .env
 
-      # 5. Verificar el contenido del `PYTHONPATH`
-      - name: Debug PYTHONPATH
-        run: echo $PYTHONPATH
+      # 5. Cargar variables de entorno desde el archivo .env
+      - name: Load environment variables
+        run: |
+          set -a
+          source .env
+          set +a
 
       # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
@@ -47,9 +53,8 @@ jobs:
           cd Backend
           poetry run pre-commit run --all-files
 
-      # 7. Ejecutar pruebas con pytest y generar reporte de cobertura
+      # 7. Ejecutar pruebas con pytest
       - name: Run tests
         run: |
           cd Backend
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
