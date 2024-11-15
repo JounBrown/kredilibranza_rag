@@ -6,6 +6,7 @@ import pytest
 from fastapi import HTTPException
 from jose import jwt
 
+
 from app.configurations import Configs
 from app.core.auth import create_access_token, get_current_user, pwd_context, verify_password
 from app.core.models import Document, UserInDB
