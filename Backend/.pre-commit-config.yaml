@@ -1,4 +1,4 @@
-default_stages: [ commit, manual ]
+default_stages: [ pre-commit, manual ]
 
 repos:
   - repo: https://github.com/ambv/black
@@ -18,16 +18,15 @@ repos:
     hooks:
       - id: bandit
         args:
-          - "--skip=B311"
-          - "-x=test/**"
-          - "--skip=B104,B311"
+          - "--skip=B101,B104,B311"
+        exclude: 'test/.*'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.6.1
     hooks:
       - id: mypy
         additional_dependencies:
-          - types-PyMySQL
           - types-requests
           - types-cachetools
           - types-pyyaml
+

@@ -8,8 +8,9 @@ from app.configurations import Configs
 from app.core import ports
 from app.core.auth import create_access_token, verify_password
 from app.core.models import Document
-from app.core.ports import DocumentTextExtractorPort, FormRepositoryPort, UserRepositoryPort
+from app.core.ports import DocumentTextExtractorPort, UserRepositoryPort
 from app.core.schemas import FormData, Submission
+from app.adapters.mongodb_adapter import MongoDBAdapter
 
 
 class RAGService:
@@ -48,7 +49,7 @@ class DocumentService:
 
 
 class FormSubmissionService:
-    def __init__(self, form_repository: FormRepositoryPort, configs):
+    def __init__(self, form_repository: ports.FormRepositoryPort, configs: Configs):
         self.form_repository = form_repository
         self.configs = configs
 
@@ -110,6 +111,8 @@ class FormSubmissionService:
             return False, f"Error al procesar el formulario: {str(e)}", {}
 
     async def get_form_submissions(self, cedula: Optional[str] = None) -> List[Submission]:
+        if not isinstance(self.form_repository, MongoDBAdapter):
+            raise TypeError("El repositorio no tiene acceso a la base de datos.")
         query = {"cedula": cedula} if cedula else {}
         submissions_cursor = self.form_repository.db["form_submissions"].find(query)
 

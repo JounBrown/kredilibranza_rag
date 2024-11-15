@@ -9,6 +9,7 @@ from app.adapters.mongodb_user_adapter import MongoDBUserAdapter
 from app.adapters.openai_adapter import OpenAIAdapter
 from app.configurations import Configs
 from app.usecases import AuthService, DocumentService, FormSubmissionService
+from typing import Union, Optional
 
 # OAuth2 scheme para autenticación
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
@@ -43,7 +44,8 @@ class MongoDBAdapterSingleton:
 
 
 class FormServiceSingleton:
-    _instance = None
+    _instance: Optional[FormSubmissionService] = None
+    _configs: Optional[Configs] = None
 
     @classmethod
     def get_instance(cls) -> FormSubmissionService:
@@ -66,6 +68,7 @@ class AuthServiceSingleton:
 
 
 def get_document_service(file: UploadFile) -> DocumentService:
+    text_extractor: Union[PDFTextExtractorAdapter, DocxTextExtractorAdapter]
     if file.content_type == "application/pdf":
         text_extractor = PDFTextExtractorAdapter()  # Estrategia para PDF
     elif file.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
