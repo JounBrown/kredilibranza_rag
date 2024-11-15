@@ -21,53 +21,53 @@ jobs:
           - 27017:27017
 
     steps:
-      # 1. Checkout del código
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Configurar Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      # 3. Instalar Poetry
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.2.0
         with:
           poetry-version: '1.5.1'
 
-      # 4. Instalar dependencias
       - name: Install dependencies
         working-directory: Backend
         run: poetry install
 
-      # 5. Configurar variables de entorno y PYTHONPATH
       - name: Set up environment variables
         working-directory: Backend
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          OTHER_VAR: ${{ secrets.OTHER_VAR }}
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
-          echo "OTHER_VAR=${{ secrets.OTHER_VAR }}" >> $GITHUB_ENV
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+          echo "MODEL=text-davinci-003" >> $GITHUB_ENV
+          echo "MAX_TOKENS=100" >> $GITHUB_ENV
+          echo "TEMPERATURE=0.7" >> $GITHUB_ENV
+          echo "NUMBER_OF_VECTORIAL_RESULTS=5" >> $GITHUB_ENV
+          echo "ALGORITHM=HS256" >> $GITHUB_ENV
+          echo "ACCESS_TOKEN_EXPIRE_MINUTES=30" >> $GITHUB_ENV
+          echo "MONGODB_URI=mongodb://localhost:27017/testdb" >> $GITHUB_ENV
+          echo "MONGODB_NAME=testdb" >> $GITHUB_ENV
+          echo "EMAIL_USERNAME=test_email@example.com" >> $GITHUB_ENV
+          echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> $GITHUB_ENV
+          echo "EMAIL_FROM=from@example.com" >> $GITHUB_ENV
+          echo "EMAIL_TO=to@example.com" >> $GITHUB_ENV
           echo "PYTHONPATH=${{ github.workspace }}/Backend" >> $GITHUB_ENV
 
-      # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         working-directory: Backend
         run: poetry run pre-commit run --all-files
 
-      # 7. Ejecutar pruebas con pytest y generar reporte de cobertura
       - name: Run tests
         working-directory: Backend
         env:
-          MONGO_URI: "mongodb://localhost:27017/testdb"
           PYTHONPATH: ${{ github.workspace }}/Backend
         run: |
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
 
-      # 8. Publicar reporte de cobertura (opcional)
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
         with:
