@@ -23,17 +23,26 @@ jobs:
         with:
           python-version: '3.11'
 
-      # 3. Configurar variables de entorno desde GitHub Secrets
-      - name: Set environment variables
+      # 3. Instalar Poetry y agregarlo al PATH
+      - name: Install Poetry
         run: |
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
-          echo "EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}" >> .env
-          echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
+          python -m pip install --upgrade pip
+          pip install poetry
+          echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
 
-      # 4. Ejecutar pre-commit y pruebas
+      # 4. Instalar dependencias del proyecto
+      - name: Install dependencies
+        run: |
+          cd Backend
+          poetry install
+
+      # 5. Ejecutar pre-commit para análisis de código
+      - name: Run pre-commit
+        run: |
+          cd Backend
+          poetry run pre-commit run --all-files
+
+      # 6. Ejecutar pruebas con pytest
       - name: Run tests
         run: |
           cd Backend
