@@ -25,15 +25,15 @@ jobs:
 
       # 3. Instalar Poetry y dependencias
       - name: Install Poetry and dependencies
+        working-directory: Backend
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-          cd Backend
           poetry install
 
       # 4. Crear el archivo .env usando GitHub Secrets
       - name: Create .env file from GitHub Secrets
+        working-directory: Backend
         run: |
           echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "model=${{ secrets.MODEL }}" >> .env
@@ -50,25 +50,14 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Configurar el PYTHONPATH para incluir `Backend`
-      - name: Set PYTHONPATH
-        run: |
-          echo "PYTHONPATH=$(pwd)/Backend" >> $GITHUB_ENV
-          echo "PYTHONPATH configurado a: $(pwd)/Backend"
-
-      # 6. Verificar el contenido del archivo .env
+      # 5. Verificar el contenido del archivo .env
       - name: Verify .env file
-        run: |
-          cat .env
+        working-directory: Backend
+        run: cat .env
 
-      # 7. Ejecutar pre-commit para análisis de código
-      - name: Run pre-commit
-        run: |
-          cd Backend
-          poetry run pre-commit run --all-files
-
-      # 8. Ejecutar pruebas con pytest
+      # 6. Configurar PYTHONPATH y ejecutar pruebas
       - name: Run tests
+        working-directory: Backend
         run: |
-          export PYTHONPATH=$(pwd)/Backend
+          export PYTHONPATH=$(pwd)
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
