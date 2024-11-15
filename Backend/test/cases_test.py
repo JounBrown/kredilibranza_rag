@@ -13,6 +13,26 @@ from app.core.schemas import FormData
 from app.usecases import AuthService, DocumentService, FormSubmissionService, RAGService
 
 
+@patch('app.configurations.Configs')
+def test_some_function(mock_configs):
+    mock_configs.return_value = Configs(
+        secret_key='test_secret',
+        openai_api_key='test_api_key',
+        model='test_model',
+        max_tokens=100,
+        temperature=0.7,
+        number_of_vectorial_results=5,
+        algorithm='HS256',
+        access_token_expire_minutes=30,
+        mongodb_uri='mongodb://localhost:27017/testdb',
+        mongodb_name='testdb',
+        email_username='test_email@example.com',
+        email_password='test_password',
+        email_from='from@example.com',
+        email_to='to@example.com'
+    )
+
+
 def test_generate_answer():
     # 1. Preparación (Arrange)
     question = "¿Cuál es el capital de Francia?"
