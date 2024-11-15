@@ -35,6 +35,15 @@ jobs:
       - name: Create .env file from GitHub Secrets
         working-directory: Backend
         run: |
+          echo "Verificando secretos antes de crear el archivo .env"
+          echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}"
+          echo "model=${{ secrets.MODEL }}"
+          echo "max_tokens=${{ secrets.MAX_TOKENS }}"
+          echo "temperature=${{ secrets.TEMPERATURE }}"
+          echo "number_of_vectorial_results=${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}"
+          echo "access_token_expire_minutes=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}"
+          
+          # Crear el archivo .env
           echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "model=${{ secrets.MODEL }}" >> .env
           echo "max_tokens=${{ secrets.MAX_TOKENS }}" >> .env
@@ -50,12 +59,27 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Verificar el contenido del archivo .env
+      # 5. Verificar el contenido del archivo .env creado
       - name: Verify .env file
         working-directory: Backend
-        run: cat .env
+        run: |
+          echo "Verificando el contenido del archivo .env:"
+          cat .env
 
-      # 6. Configurar PYTHONPATH y ejecutar pruebas
+      # 6. Cargar variables de entorno desde .env
+      - name: Load environment variables
+        working-directory: Backend
+        run: |
+          set -a
+          source .env
+          set +a
+
+      # 7. Ejecutar pre-commit para análisis de código
+      - name: Run pre-commit
+        working-directory: Backend
+        run: poetry run pre-commit run --all-files
+
+      # 8. Ejecutar pruebas con pytest y generar reporte de cobertura
       - name: Run tests
         working-directory: Backend
         run: |
