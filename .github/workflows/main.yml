@@ -31,11 +31,10 @@ jobs:
           cd Backend
           poetry install
 
-      # 4. Cargar el archivo .env desde la ruta correcta
+      # 4. Cargar el archivo .env desde la raíz de Backend
       - name: Set up environment variables
         run: |
-          if [ -f "Backend/.env" ]; then cp Backend/.env .env; fi
-          if [ -f "Backend/test/.env" ]; then cp Backend/test/.env .env; fi
+          if [ -f ".env" ]; then cp .env Backend/.env; fi
           echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
         working-directory: Backend
 
@@ -45,8 +44,8 @@ jobs:
           cd Backend
           poetry run pre-commit run --all-files
 
-      # 6. Ejecutar pruebas con pytest y generar reporte de cobertura
+      # 6. Ejecutar pruebas con pytest
       - name: Run tests
         run: |
           cd Backend
-          poetry run python -m dotenv run pytest --cov=app --cov-report=xml test/cases_test.py
+          poetry run pytest --cov=app --cov-report=xml test/cases_test.py
