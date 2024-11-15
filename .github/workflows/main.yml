@@ -32,15 +32,25 @@ jobs:
           cd Backend
           poetry install
 
-      # 4. Copiar y verificar el archivo .env
-      - name: Copy and verify .env file
+      # 4. Crear el archivo .env usando GitHub Secrets
+      - name: Create .env file from GitHub Secrets
         run: |
-          if [ -f "Backend/.env" ]; then cp Backend/.env .env; fi
-          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
-          echo "Contenido del archivo .env:"
-          cat .env
+          echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "model=${{ secrets.MODEL }}" >> .env
+          echo "max_tokens=${{ secrets.MAX_TOKENS }}" >> .env
+          echo "temperature=${{ secrets.TEMPERATURE }}" >> .env
+          echo "number_of_vectorial_results=${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}" >> .env
+          echo "secret_key=${{ secrets.SECRET_KEY }}" >> .env
+          echo "algorithm=${{ secrets.ALGORITHM }}" >> .env
+          echo "access_token_expire_minutes=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
+          echo "mongodb_uri=${{ secrets.MONGODB_URI }}" >> .env
+          echo "mongodb_name=${{ secrets.MONGODB_NAME }}" >> .env
+          echo "email_username=${{ secrets.EMAIL_USERNAME }}" >> .env
+          echo "email_password=${{ secrets.EMAIL_PASSWORD }}" >> .env
+          echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
+          echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Cargar variables de entorno desde el archivo .env
+      # 5. Cargar variables de entorno
       - name: Load environment variables
         run: |
           set -a
@@ -53,7 +63,7 @@ jobs:
           cd Backend
           poetry run pre-commit run --all-files
 
-      # 7. Ejecutar pruebas con pytest
+      # 7. Ejecutar pruebas con pytest y generar reporte de cobertura
       - name: Run tests
         run: |
           cd Backend
