@@ -31,9 +31,11 @@ jobs:
           cd Backend
           poetry install
 
-      # 4. Establecer el PYTHONPATH para el proyecto
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+      # 4. Cargar el archivo .env y configurar PYTHONPATH
+      - name: Set up environment variables
+        run: |
+          cp Backend/.env .env
+          echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
         working-directory: Backend
 
       # 5. Ejecutar pre-commit para análisis de código
@@ -46,13 +48,4 @@ jobs:
       - name: Run tests
         run: |
           cd Backend
-          poetry run pytest --cov=app --cov-report=xml
-
-      # 7. Subir reporte de cobertura a Codecov
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          flags: smart-tests
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          poetry run python -m dotenv run pytest --cov=app --cov-report=xml test/cases_test.py
