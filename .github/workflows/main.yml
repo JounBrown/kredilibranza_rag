@@ -50,20 +50,26 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Cargar variables de entorno
+      # 5. Verificar el archivo .env creado
+      - name: Verify .env file
+        run: |
+          echo "Verificando el contenido del archivo .env:"
+          cat .env
+
+      # 6. Cargar variables de entorno desde .env
       - name: Load environment variables
         run: |
           set -a
           source .env
           set +a
 
-      # 6. Ejecutar pre-commit para análisis de código
+      # 7. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         run: |
           cd Backend
           poetry run pre-commit run --all-files
 
-      # 7. Ejecutar pruebas con pytest y generar reporte de cobertura
+      # 8. Ejecutar pruebas con pytest
       - name: Run tests
         run: |
           cd Backend
