@@ -31,10 +31,11 @@ jobs:
           pip install poetry
           poetry install
 
-      # 4. Crear el archivo .env desde GitHub Secrets
-      - name: Create .env file
+      # 4. Crear el archivo .env desde GitHub Secrets y cargarlo con dotenv
+      - name: Create .env file and load with dotenv
         working-directory: Backend
         run: |
+          echo "Creando archivo .env con los secretos"
           echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "model=${{ secrets.MODEL }}" >> .env
           echo "max_tokens=${{ secrets.MAX_TOKENS }}" >> .env
@@ -50,31 +51,27 @@ jobs:
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
 
-      # 5. Verificar y cargar el archivo .env
-      - name: Verify and load .env file
+      # 5. Cargar el archivo .env usando python-dotenv y verificar los valores
+      - name: Load .env and debug variables
         working-directory: Backend
         run: |
-          echo "Verificando el contenido del archivo .env:"
-          cat .env
-          set -a
-          source .env
-          set +a
+          python -m pip install python-dotenv
+          python -c "
+import os
+from dotenv import load_dotenv
+load_dotenv()
+print('max_tokens:', os.getenv('max_tokens'))
+print('temperature:', os.getenv('temperature'))
+print('number_of_vectorial_results:', os.getenv('number_of_vectorial_results'))
+print('access_token_expire_minutes:', os.getenv('access_token_expire_minutes'))
+"
 
-      # 6. Depuración de las variables antes de ejecutar pruebas
-      - name: Debug Environment Variables
-        run: |
-          echo "Debugging environment variables:"
-          echo "MAX_TOKENS=$MAX_TOKENS"
-          echo "TEMPERATURE=$TEMPERATURE"
-          echo "NUMBER_OF_VECTORIAL_RESULTS=$NUMBER_OF_VECTORIAL_RESULTS"
-          echo "ACCESS_TOKEN_EXPIRE_MINUTES=$ACCESS_TOKEN_EXPIRE_MINUTES"
-
-      # 7. Ejecutar pre-commit para análisis de código
+      # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         working-directory: Backend
         run: poetry run pre-commit run --all-files
 
-      # 8. Ejecutar pruebas con pytest
+      # 7. Ejecutar pruebas con pytest
       - name: Run tests
         working-directory: Backend
         run: |
