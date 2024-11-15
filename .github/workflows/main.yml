@@ -23,27 +23,33 @@ jobs:
         with:
           python-version: '3.11'
 
-      # 3. Instalar Poetry y agregarlo al PATH
-      - name: Install Poetry
+      # 3. Instalar Poetry y dependencias
+      - name: Install Poetry and dependencies
         run: |
           python -m pip install --upgrade pip
           pip install poetry
           echo "export PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
-
-      # 4. Instalar dependencias del proyecto
-      - name: Install dependencies
-        run: |
           cd Backend
           poetry install
 
-      # 5. Ejecutar pre-commit para análisis de código
+      # 4. Configurar `PYTHONPATH` para incluir el directorio `Backend`
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+        working-directory: Backend
+
+      # 5. Verificar el contenido del `PYTHONPATH`
+      - name: Debug PYTHONPATH
+        run: echo $PYTHONPATH
+
+      # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         run: |
           cd Backend
           poetry run pre-commit run --all-files
 
-      # 6. Ejecutar pruebas con pytest
+      # 7. Ejecutar pruebas con pytest y generar reporte de cobertura
       - name: Run tests
         run: |
           cd Backend
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
