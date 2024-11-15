@@ -31,7 +31,16 @@ jobs:
           pip install poetry
           poetry install
 
-      # 4. Crear el archivo .env usando GitHub Secrets y depuración adicional
+      # 4. Depurar y validar secretos antes de crear el archivo .env
+      - name: Debug Secrets
+        run: |
+          echo "Validando secretos..."
+          if [ -z "${{ secrets.MAX_TOKENS }}" ]; then echo "Error: MAX_TOKENS está vacío"; exit 1; fi
+          if [ -z "${{ secrets.TEMPERATURE }}" ]; then echo "Error: TEMPERATURE está vacío"; exit 1; fi
+          if [ -z "${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}" ]; then echo "Error: NUMBER_OF_VECTORIAL_RESULTS está vacío"; exit 1; fi
+          if [ -z "${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" ]; then echo "Error: ACCESS_TOKEN_EXPIRE_MINUTES está vacío"; exit 1; fi
+
+      # 5. Crear el archivo .env usando GitHub Secrets
       - name: Create .env file from GitHub Secrets
         working-directory: Backend
         run: |
@@ -50,15 +59,6 @@ jobs:
           echo "email_password=${{ secrets.EMAIL_PASSWORD }}" >> .env
           echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
           echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
-
-      # 5. Verificar que los secretos se han cargado correctamente
-      - name: Debug Secrets
-        run: |
-          echo "Verificando secretos..."
-          echo "max_tokens: ${{ secrets.MAX_TOKENS }}"
-          echo "temperature: ${{ secrets.TEMPERATURE }}"
-          echo "number_of_vectorial_results: ${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}"
-          echo "access_token_expire_minutes: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}"
 
       # 6. Verificar el contenido del archivo .env
       - name: Verify .env file
