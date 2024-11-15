@@ -4,76 +4,70 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+
     steps:
       # 1. Checkout del código
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # 2. Configurar Python
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      # 3. Instalar Poetry y dependencias
-      - name: Install Poetry and dependencies
-        working-directory: Backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install
+      # 3. Instalar Poetry
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.2.0
+        with:
+          poetry-version: '1.5.1'
 
-      # 4. Crear el archivo .env desde GitHub Secrets y cargarlo con dotenv
-      - name: Create .env file and load with dotenv
+      # 4. Instalar dependencias
+      - name: Install dependencies
         working-directory: Backend
-        run: |
-          echo "Creando archivo .env con los secretos"
-          echo "openai_api_key=${{ secrets.OPENAI_API_KEY }}" >> .env
-          echo "model=${{ secrets.MODEL }}" >> .env
-          echo "max_tokens=${{ secrets.MAX_TOKENS }}" >> .env
-          echo "temperature=${{ secrets.TEMPERATURE }}" >> .env
-          echo "number_of_vectorial_results=${{ secrets.NUMBER_OF_VECTORIAL_RESULTS }}" >> .env
-          echo "secret_key=${{ secrets.SECRET_KEY }}" >> .env
-          echo "algorithm=${{ secrets.ALGORITHM }}" >> .env
-          echo "access_token_expire_minutes=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
-          echo "mongodb_uri=${{ secrets.MONGODB_URI }}" >> .env
-          echo "mongodb_name=${{ secrets.MONGODB_NAME }}" >> .env
-          echo "email_username=${{ secrets.EMAIL_USERNAME }}" >> .env
-          echo "email_password=${{ secrets.EMAIL_PASSWORD }}" >> .env
-          echo "email_from=${{ secrets.EMAIL_FROM }}" >> .env
-          echo "email_to=${{ secrets.EMAIL_TO }}" >> .env
+        run: poetry install
 
-      # 5. Cargar el archivo .env usando python-dotenv y verificar los valores
-      - name: Load .env and debug variables
-        working-directory: Backend
+      # 5. Configurar variables de entorno
+      - name: Set up environment variables
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          OTHER_VAR: ${{ secrets.OTHER_VAR }}
         run: |
-          python -m pip install python-dotenv
-          python -c "
-import os
-from dotenv import load_dotenv
-load_dotenv()
-print('max_tokens:', os.getenv('max_tokens'))
-print('temperature:', os.getenv('temperature'))
-print('number_of_vectorial_results:', os.getenv('number_of_vectorial_results'))
-print('access_token_expire_minutes:', os.getenv('access_token_expire_minutes'))
-"
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "OTHER_VAR=${{ secrets.OTHER_VAR }}" >> $GITHUB_ENV
+        working-directory: Backend
 
       # 6. Ejecutar pre-commit para análisis de código
       - name: Run pre-commit
         working-directory: Backend
         run: poetry run pre-commit run --all-files
 
-      # 7. Ejecutar pruebas con pytest
+      # 7. Ejecutar pruebas con pytest y generar reporte de cobertura
       - name: Run tests
         working-directory: Backend
+        env:
+          MONGO_URI: "mongodb://localhost:27017/testdb"
         run: |
-          export PYTHONPATH=$(pwd)
           poetry run pytest --cov=app --cov-report=xml test/cases_test.py
+
+      # 8. Publicar reporte de cobertura (opcional)
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: Backend/coverage.xml
