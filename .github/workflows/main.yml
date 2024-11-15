@@ -31,10 +31,11 @@ jobs:
           cd Backend
           poetry install
 
-      # 4. Cargar el archivo .env y configurar PYTHONPATH
+      # 4. Cargar el archivo .env desde la ruta correcta
       - name: Set up environment variables
         run: |
-          cp Backend/.env .env
+          if [ -f "Backend/.env" ]; then cp Backend/.env .env; fi
+          if [ -f "Backend/test/.env" ]; then cp Backend/test/.env .env; fi
           echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
         working-directory: Backend
 
