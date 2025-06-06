@@ -17,9 +17,9 @@ function NavBar() {
     <nav id="navegacion">
       {!isChatbotPage && (
         <>
-          <img src="/img/logo sin fondo.png\" alt="Kredilibranza Logo\" className="logo" />
-          <img id="Clientes\" src="/img/clientes.png\" alt="Clientes" />
-          <span id="txtClientes\" style={{ color: "#ed5621" }}>Clientes: 500</span>
+          <img src="/img/logo sin fondo.png" alt="Kredilibranza Logo" className="logo" />
+          <img id="Clientes" src="/img/clientes.png" alt="Clientes" />
+          <span id="txtClientes" style={{ color: "#ed5621" }}>Clientes: 500</span>
           <ul>
             <li><Link to="/">Simulador</Link></li>
             <li><Link to="/#condiciones">Condiciones</Link></li>
