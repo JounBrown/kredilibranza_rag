@@ -1,0 +1,130 @@
+/* src/layouts/NavBar.css - AJUSTADO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body { /* Si este es tu CSS principal para NavBar, estos estilos globales deberían ir a index.css o App.css */
+    font-family: Arial, sans-serif;
+    min-width: 770px;
+    min-height: 540px; 
+}
+
+nav#navegacion { /* Hacer más específico el selector del nav */
+    background-color: #ffffffb0; /* Fondo blanco semi-transparente */
+    width: 100%;
+    height: 10vh; /* Reducir altura, ej: 10vh o unos 70-80px. Ajusta según necesites. */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center; /* Centra hijos verticalmente */
+    justify-content: space-between; /* Espacio entre logo/clientes y los links/botón */
+    padding: 0 2%; /* Padding horizontal */
+    border-bottom: 1px solid #ed5621; /* Línea naranja inferior */
+}
+
+nav#navegacion .logo {
+    height: 70%; /* Porcentaje de la altura del nav */
+    max-height: 50px; /* Limitar el tamaño máximo del logo */
+    width: auto;
+    /* margin-left: 2%; No es necesario si nav tiene padding y se usa space-between */
+}
+
+/* Contenedor para Clientes y txtClientes para agruparlos si es necesario */
+/* Opcional: Si solo son dos elementos, puedes posicionarlos individualmente */
+.clientes-info-navbar { /* Si decides envolverlos en NavBar.jsx */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* position: absolute; top: 10px; left: 10px; /* O usa márgenes */
+    margin-left: 2%; /* Espacio después del logo */
+}
+
+nav#navegacion #Clientes { /* Icono de clientes */
+    /* position: absolute; */ /* Quitar si está en el flujo normal del nav */
+    /* top: 15px; /* Ajusta para que esté dentro del nav */
+    /* left: 150px; /* Ajusta para que esté después del logo */
+    width: 30px;  /* Hacerlo más pequeño */
+    height: auto;
+    margin-left: 15px;
+    margin-right: 5px; /* Espacio entre icono y texto si están en línea */
+    /* Quitar márgenes porcentuales grandes */
+    /* z-index: 99; No es necesario si el orden del DOM es correcto */
+}
+
+nav#navegacion #txtClientes { 
+    font-family: Arial, sans-serif;
+    font-size: 0.85rem; /* Un poco más pequeño */
+    color: #ed5621; /* Asegurar que el color se aplique */
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-left: 5px;
+    
+    
+}
+
+/* Wrapper para agrupar logo y clientes info a la izquierda */
+ .navbar-left-content {
+     display: flex;
+     align-items: center;
+ }
+
+
+nav#navegacion ul {
+    list-style-type: none;
+    margin: 0; /* Quitar margen por defecto */
+    padding: 0;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: auto; /* Empuja la lista de links a la derecha */
+}
+
+nav#navegacion ul li {
+    margin: 0 1rem; /* Espacio entre links */
+    display: flex;
+    align-items: center;
+}
+
+nav#navegacion ul li a, 
+nav#navegacion ul li button {
+    color: #004080;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: clamp(0.8rem, 1.5vw, 0.95rem); /* Tamaño de fuente responsive */
+    padding: 0.5em 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+nav#navegacion ul li a:hover,
+nav#navegacion ul li button:not(.login):hover {
+    color: #ed5621;
+}
+
+nav#navegacion .login {
+    border-radius: 20px;
+    background-color: #e7771c !important;
+    color: white !important;
+    font-weight: bold;
+    font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+    padding: 0.6em 1.3em !important;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    line-height: 1;
+}
+
+nav#navegacion .login:hover {
+    transform: scale(1.05);
+    background-color: #ed5621 !important;
+    color: white !important;
+}
+
+/* hr#separador1 ya no se usa si nav tiene border-bottom */
+/* #separador1 { ... } */
