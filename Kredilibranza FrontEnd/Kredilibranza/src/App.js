@@ -1,27 +1,17 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import NavBar from "./componentes/NavBar";
-import Header from "./componentes/Header";
-import Form from "./componentes/Form";
-import Condiciones from "./componentes/Condiciones";
-import Simulador from "./componentes/Simulador";
-import QuienesSomos from "./componentes/QuienesSomos";
-import Footer from "./componentes/Footer";
-import ChatBotPage from "./componentes/chatbot";
-import FloatingChatBot from "./componentes/FloatingChatBot"; // Importar el nuevo componente
-import FileUpload from "./componentes/FileUpload";
+import { MainLayout } from "./layouts";
+import { HomePage } from "./pages";
+import { LoginPage } from "./features/auth";
+import { ChatBotPage, FloatingChatBot } from "./features/chatbot";
+import { FileUploadPage } from "./features/file-management";
 
-import Login from "./componentes/Login"; 
-
-import './componentes/Banner.css';
-import './componentes/Footer.css';
-import './componentes/Form.css';
-import './componentes/NavBar.css';
-import './componentes/QuienesSomos.css';
-import './componentes/Simulador.css';
-import './componentes/Condiciones.css';
-import './componentes/chatbot.css';
-import './componentes/FloatingChatBot.css'; // Importar los estilos del flotante
+// Importar estilos globales
+import './features/form-submission/styles/Form.css';
+import './features/company-info/styles/Condiciones.css';
+import './features/company-info/styles/QuienesSomos.css';
+import './features/simulator/styles/Simulador.css';
+import './features/chatbot/styles/FloatingChatBot.css';
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -32,23 +22,17 @@ function App() {
   return (
     <Router>
       <div>
-        <NavBar />
         <Routes>
           <Route
             path="/"
             element={
-              <>
-                <Header />
-                <Form />
-                <Condiciones />
-                <Simulador />
-                <QuienesSomos />
-                <Footer />
-              </>
+              <MainLayout>
+                <HomePage />
+              </MainLayout>
             }
           />
 
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
 
           <Route path="/chatbot" element={<ChatBotPage />} />
 
@@ -56,12 +40,13 @@ function App() {
             path="/fileupload"
             element={
               <PrivateRoute>
-                <FileUpload />
+                <FileUploadPage />
               </PrivateRoute>
-            }/>
+            }
+          />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-        <FloatingChatBot /> {/* Agregar el flotante fuera de las rutas para que aparezca en todas las páginas */}
+        <FloatingChatBot />
       </div>
     </Router>
   );
