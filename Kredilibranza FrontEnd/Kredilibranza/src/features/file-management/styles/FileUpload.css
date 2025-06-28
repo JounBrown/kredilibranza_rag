@@ -5,83 +5,102 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
-  background-color: #f9fafb; /* Opcional: un color de fondo suave */
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fafb 0%, #e5e7eb 100%);
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Estilos para el card interno */
 .file-upload-card {
   width: 100%;
-  max-width: 800px; /* Ajusta según tus necesidades */
+  max-width: 900px;
   background-color: #ffffff;
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Opcional: sombra para el card */
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Título centrado */
 .file-upload-card h1 {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
+  color: #2d3748;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
 }
 
 /* Botón "Ver solicitudes" centrado */
 .file-upload-card .view-requests-button {
   display: block;
-  margin: 0 auto 16px auto; /* Centra el botón y añade margen inferior */
-  background-color: #3182ce; /* Azul */
+  margin: 0 auto 2rem auto;
+  background-color: #3182ce;
   color: #ffffff;
-  padding: 10px 20px;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .file-upload-card .view-requests-button:hover {
   background-color: #2b6cb0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
 }
 
 /* Estilos para la zona de drop */
 .dropzone {
-  border: 2px dashed #cbd5e0;
-  border-radius: 8px;
-  padding: 40px;
+  border: 3px dashed #cbd5e0;
+  border-radius: 15px;
+  padding: 3rem 2rem;
   text-align: center;
-  transition: border-color 0.3s, background-color 0.3s;
-  margin-bottom: 24px;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
   cursor: pointer;
+  background-color: #f8fafc;
 }
 
 .dropzone-active {
   border-color: #3182ce;
   background-color: #ebf8ff;
+  transform: scale(1.02);
+}
+
+.dropzone:hover {
+  border-color: #a0aec0;
+  background-color: #f1f5f9;
 }
 
 /* Icono y texto dentro de la dropzone */
 .dropzone .lucide-react {
   display: block;
-  margin: 0 auto 16px auto;
-  color: #cbd5e0;
+  margin: 0 auto 1rem auto;
+  color: #a0aec0;
 }
 
 .dropzone p {
-  font-size: 1.2em;
-  color: #555555;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: #4a5568;
   margin: 0;
+  line-height: 1.5;
 }
 
 /* Estilos para la lista de archivos cargados */
 .uploaded-files-list {
-  margin-top: 24px;
+  margin-top: 2rem;
 }
 
 .uploaded-files-list h2 {
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
 }
 
 .uploaded-files-list ul {
@@ -94,11 +113,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 1rem 1.5rem;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  background-color: #f7fafc;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  background-color: #f8fafc;
+  transition: all 0.3s ease;
+}
+
+.uploaded-file-item:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .uploaded-file-item:last-child {
@@ -108,30 +134,41 @@
 .uploaded-file-item .file-info {
   display: flex;
   align-items: center;
+  flex: 1;
 }
 
 .uploaded-file-item .file-info .lucide-react {
-  margin-right: 12px;
+  margin-right: 1rem;
   color: #3182ce;
+  flex-shrink: 0;
 }
 
 .uploaded-file-item .file-name {
-  font-size: 1em;
-  color: #333333;
+  font-size: 1rem;
+  color: #2d3748;
+  word-break: break-word;
 }
 
 /* Botón de eliminar archivo */
 .remove-button {
   background-color: transparent;
   border: none;
-  color: #e53e3e; /* Rojo */
+  color: #e53e3e;
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 0.5rem;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.remove-button:hover {
+  background-color: rgba(229, 62, 62, 0.1);
+  transform: scale(1.1);
 }
 
 .remove-button .lucide-react {
-  margin-right: 4px;
+  margin: 0;
 }
 
 /* Estilos para el modal */
@@ -141,20 +178,21 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo opaco */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
   cursor: pointer;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
   background-color: #ffffff;
-  padding: 32px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 800px;
+  padding: 2rem;
+  border-radius: 20px;
+  width: 95%;
+  max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -163,17 +201,15 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-}
-
-/* Evitar que los clics dentro del modal cierren el modal */
-.modal-content * {
-  cursor: default;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 /* Título del modal */
 .modal-content h2 {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
+  color: #2d3748;
+  font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
 /* Formulario de búsqueda centrado */
@@ -181,26 +217,33 @@
   display: flex;
   justify-content: center;
   width: 100%;
-  margin-bottom: 24px;
+  max-width: 400px;
+  margin-bottom: 2rem;
 }
 
 .search-form input {
   flex: 1;
-  padding: 10px 14px;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px 0 0 4px;
-  font-size: 1em;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px 0 0 8px;
+  font-size: 1rem;
   outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-form input:focus {
+  border-color: #3182ce;
 }
 
 .search-form button {
-  padding: 10px 20px;
+  padding: 0.75rem 1.5rem;
   border: none;
-  background-color: #3182ce; /* Azul */
+  background-color: #3182ce;
   color: #ffffff;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
 }
 
 .search-form button:hover {
@@ -211,46 +254,149 @@
 .table-container {
   width: 100%;
   overflow-x: auto;
+  margin-bottom: 2rem;
 }
 
 .requests-table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .requests-table th,
 .requests-table td {
   border: 1px solid #e2e8f0;
-  padding: 12px 16px;
+  padding: 1rem;
   text-align: center;
+  font-size: 0.9rem;
 }
 
 .requests-table th {
   background-color: #f7fafc;
   font-weight: bold;
+  color: #2d3748;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .requests-table tbody tr:nth-child(even) {
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
+}
+
+.requests-table tbody tr:hover {
+  background-color: #e6fffa;
 }
 
 /* Botón "Cerrar" del modal centrado */
 .close-modal-button {
-  margin-top: 24px;
-  padding: 10px 20px;
-  background-color: #e53e3e; /* Rojo */
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
+  background-color: #e53e3e;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  font-weight: 600;
 }
 
 .close-modal-button:hover {
   background-color: #c53030;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
 }
 
 /* Evitar scroll en el fondo cuando el modal está abierto */
 body.modal-open {
   overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .file-upload-container {
+    padding: 1rem;
+  }
+  
+  .file-upload-card {
+    padding: 1.5rem;
+    border-radius: 15px;
+  }
+  
+  .dropzone {
+    padding: 2rem 1rem;
+    border-radius: 10px;
+  }
+  
+  .uploaded-file-item {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .uploaded-file-item .file-info {
+    width: 100%;
+  }
+  
+  .remove-button {
+    align-self: flex-end;
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+    width: 98%;
+    border-radius: 15px;
+  }
+  
+  .search-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .search-form input,
+  .search-form button {
+    border-radius: 8px;
+  }
+  
+  .requests-table th,
+  .requests-table td {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .file-upload-container {
+    padding: 0.5rem;
+  }
+  
+  .file-upload-card {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  
+  .dropzone {
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .uploaded-file-item {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  
+  .requests-table {
+    font-size: 0.7rem;
+  }
+  
+  .requests-table th,
+  .requests-table td {
+    padding: 0.3rem;
+  }
 }

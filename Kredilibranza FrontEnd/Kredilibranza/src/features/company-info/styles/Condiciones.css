@@ -1,62 +1,191 @@
 /*-------------------------  sección condiciones --------------------------------- */
+#condiciones {
+    min-height: calc(100vh - 10vh);
+    width: 100vw;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color, rgb(246, 244, 243));
+    overflow-x: hidden;
+}
+
 .container_txtCondiciones {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 3rem;
+    padding: 0 1rem;
+}
+
+.container_txtCondiciones h2 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    color: var(--text-dark, #000203);
+    margin-bottom: 1rem;
 }
 
 .container_condiciones {
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    padding: 0 2rem;
 }
 
 .card_condiciones {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(245, 226, 220);
+    background-color: rgba(245, 226, 220, 0.9);
     border-radius: 40px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    width: 80%;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    padding: 2rem;
+    width: 100%;
+    max-width: 1000px;
+    position: relative;
+    backdrop-filter: blur(5px);
+    gap: 2rem;
 }
 
 .card_condiciones2 {
-    font-size: 100%;
-    margin-left: -4.2%;
-    position: absolute; /* Posición absoluta para superponer */
-    transform: translateX(-50%);
-    z-index: 2; /* Asegura que esté encima de #Pensionado */
-    color: white; /* Color del texto */
-    background-color: #ed5621; /* Fondo semitransparente */
-    padding: 1rem;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    position: absolute;
+    left: 2rem;
+    top: -1rem;
+    z-index: 2;
+    color: white;
+    background-color: #ed5621;
+    padding: 1rem 2rem;
     border-radius: 15px;
     text-align: center;
-    height: auto;
-    width: auto;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .card_condiciones ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
+    flex: 1;
+    margin-top: 1rem;
 }
 
 .card_condiciones li {
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    line-height: 1.5;
 }
 
 .titulo_condicion {
     color: #ed5621;
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: 0.5rem;
 }
 
 .heart_image {
-    margin-left: 20px;
+    flex-shrink: 0;
+    margin-left: 2rem;
 }
 
 .heart_image img {
     border-radius: 20px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 250px;
     height: auto;
+    object-fit: cover;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container_condiciones {
+        padding: 0 1rem;
+    }
+    
+    .card_condiciones {
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+    
+    .card_condiciones2 {
+        left: 1.5rem;
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .heart_image {
+        margin-left: 1rem;
+    }
+    
+    .heart_image img {
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    #condiciones {
+        padding: 1.5rem 0;
+    }
+    
+    .container_txtCondiciones {
+        margin-bottom: 2rem;
+    }
+    
+    .container_condiciones {
+        padding: 0 1rem;
+    }
+    
+    .card_condiciones {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        border-radius: 25px;
+        gap: 2rem;
+    }
+    
+    .card_condiciones2 {
+        position: static;
+        margin-bottom: 1rem;
+        transform: none;
+    }
+    
+    .heart_image {
+        margin-left: 0;
+        order: -1;
+    }
+    
+    .heart_image img {
+        max-width: 180px;
+    }
+    
+    .card_condiciones ul {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    #condiciones {
+        padding: 1rem 0;
+    }
+    
+    .container_condiciones {
+        padding: 0 0.5rem;
+    }
+    
+    .card_condiciones {
+        padding: 1.5rem 1rem;
+        border-radius: 20px;
+        gap: 1.5rem;
+    }
+    
+    .card_condiciones2 {
+        padding: 0.6rem 1rem;
+        border-radius: 10px;
+    }
+    
+    .heart_image img {
+        max-width: 150px;
+        border-radius: 15px;
+    }
+    
+    .card_condiciones li {
+        margin-bottom: 0.8rem;
+    }
 }

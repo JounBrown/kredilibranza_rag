@@ -1,53 +1,160 @@
 /*------------------------- sección quienes somos --------------------------------- */
 #quienes-somos {
+    min-height: calc(100vh - 10vh);
+    width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 2rem;
     color: #000203;
-    margin-top: 2%;
-    z-index: 100;
-    
+    background-color: var(--background-color, rgb(246, 244, 243));
+    overflow-x: hidden;
 }
 
 #quienes-somos h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 2rem;
+    color: #ed5621;
+    font-weight: bold;
 }
 
-#quienes-somos p {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-    margin: 0 5%;
+#quienes-somos > p {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    line-height: 1.6;
+    margin-bottom: 3rem;
+    max-width: 900px;
+    color: #333;
 }
 
 #separador2 {
-    width: 100%;
+    width: 80%;
+    max-width: 600px;
     border: none;
-    height: 1px;
-    background-color: #ed5621;
-    margin-top: 2%;
-    z-index: 1000;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ed5621, transparent);
+    margin: 2rem 0 3rem 0;
+    border-radius: 2px;
 }
 
 .mision-vision {
     display: flex;
-    flex: 1;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
-    padding: 2rem;
+    align-items: stretch;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1000px;
 }
 
 .mision, .vision {
-    margin: 5%;
-    margin-top: 1%;
+    flex: 1;
     padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(237, 86, 33, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mision:hover, .vision:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 .mision h3, .vision h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    margin-bottom: 1.5rem;
+    color: #ed5621;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mision p, .vision p {
+    font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+    line-height: 1.6;
+    color: #444;
+    text-align: justify;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    #quienes-somos {
+        padding: 1.5rem;
+    }
+    
+    .mision-vision {
+        gap: 2rem;
+    }
+    
+    .mision, .vision {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    #quienes-somos {
+        padding: 1rem;
+    }
+    
+    #quienes-somos > p {
+        margin-bottom: 2rem;
+    }
+    
+    #separador2 {
+        width: 90%;
+        margin: 1.5rem 0 2rem 0;
+    }
+    
+    .mision-vision {
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+    
+    .mision, .vision {
+        padding: 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .mision p, .vision p {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    #quienes-somos {
+        padding: 0.5rem;
+    }
+    
+    #quienes-somos h2 {
+        margin-bottom: 1.5rem;
+    }
+    
+    #quienes-somos > p {
+        margin-bottom: 1.5rem;
+        padding: 0 0.5rem;
+    }
+    
+    #separador2 {
+        width: 95%;
+        height: 2px;
+        margin: 1rem 0 1.5rem 0;
+    }
+    
+    .mision-vision {
+        gap: 1rem;
+    }
+    
+    .mision, .vision {
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    
+    .mision h3, .vision h3 {
+        margin-bottom: 1rem;
+    }
 }
