@@ -1,10 +1,12 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { MainLayout } from "./layouts";
 import { HomePage } from "./pages";
 import { LoginPage } from "./features/auth";
 import { ChatBotPage, FloatingChatBot } from "./features/chatbot";
 import { FileUploadPage } from "./features/file-management";
+
+import { FloatingClientes } from './components/ui';
+
 
 // Importar estilos globales
 import './features/form-submission/styles/Form.css';
@@ -46,6 +48,7 @@ function App() {
           />
           <Route path="*" element={<Navigate to="/login\" replace />} />
         </Routes>
+        <FloatingClientes />
         <FloatingChatBot />
       </div>
     </Router>

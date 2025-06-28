@@ -19,8 +19,6 @@ function NavBar() {
         <>
           <div className="navbar-left-content">
             <img src="/img/logo sin fondo.png" alt="Kredilibranza Logo" className="logo" />
-            <img id="Clientes" src="/img/clientes.png" alt="Clientes Icon" />
-            <span id="txtClientes" style={{ color: "#ed5621" }}>Clientes: 500</span>
           </div>
           <ul>
             <li><Link to="/">Simulador</Link></li>

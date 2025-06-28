@@ -142,7 +142,7 @@ function RegistrationForm() {
                   He leído y acepto <span style={{ color: "#ed5621" }}>la política de privacidad de datos</span>
                 </label>
               </div>
-              <button type="submit">Enviar</button>
+              <button type="submit">SOLICITAR MI CREDITO</button>
             </form>
           </div>
         </div>
